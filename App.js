@@ -8,7 +8,7 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <SQLiteProvider databaseName="test.db"
+    <SQLiteProvider databaseName="xd.db"
       onInit={async (db) => {
         await db.execAsync(`
           CREATE TABLE IF NOT EXISTS mesa (
@@ -16,6 +16,19 @@ export default function App() {
             numero INTEGER NOT NULL,
             estado TEXT NOT NULL
           );
+          INSERT OR IGNORE INTO mesa (numero, estado) VALUES
+            (1, 'disponible'),
+            (2, 'disponible'),
+            (3, 'ocupada'),
+            (4, 'disponible'),
+            (5, 'disponible'),
+            (6, 'ocupada'),
+            (7, 'disponible'),
+            (8, 'ocupada'),
+            (9, 'disponible'),
+            (10, 'disponible'),
+            (11, 'ocupada'),
+            (12, 'disponible');
           PRAGMA journal_mode = WAL;
         `);
       }}

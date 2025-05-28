@@ -1,24 +1,22 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
-
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, Platform } from 'react-native';
 const fondo = require('../assets/fondo.png');
+import MesaList from './MesaList'; 
 
 export default function Mesas({ navigation }) {
   return (
     <ImageBackground source={fondo} style={styles.background}>
       <View style={styles.container}>
-
         <View style={styles.box}>
-          <Text style={styles.text}>Número de Mesa</Text>
+          <Text style={styles.text}>Número de Mesas</Text>
         </View>
-
+        <MesaList />
         <TouchableOpacity 
-            style={styles.cancelButton}
-            onPress={() => navigation.goBack()}
-            >
+          style={styles.cancelButton}
+          onPress={() => navigation.goBack()}
+        >
           <Text style={styles.cancelButtonText}>Cancelar</Text>
         </TouchableOpacity>
-
       </View>
     </ImageBackground>
   );

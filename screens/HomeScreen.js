@@ -1,15 +1,18 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, ImageBackground, TouchableOpacity} from 'react-native';
 
-const fondo = require('../assets/fondo.png');
+const fondo = require('../assets/fondo.webp');
 
 export default function HomeScreen({ navigation }) {
   return (
     <ImageBackground source={fondo} style={styles.background}>
       <View style={styles.overlay}>
 
-        <TouchableOpacity style={styles.boton}>
-          <Text style={styles.textoBoton}>INICIAR COMANDA</Text>
+        <TouchableOpacity 
+            style={styles.boton}
+            onPress={() => navigation.navigate('MesaComanda')}
+        >
+            <Text style={styles.textoBoton}>INICIAR COMANDA</Text>
         </TouchableOpacity>
 
         <TouchableOpacity

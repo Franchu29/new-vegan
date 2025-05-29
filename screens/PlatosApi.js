@@ -1,7 +1,7 @@
-
+import { API_BASE_URL } from '../config';
 export async function getEventos() {
   try {
-    const res = await fetch('http://192.168.0.16:5000/api/platos');
+    const res = await fetch(`${API_BASE_URL}/api/platos`);
     const data = await res.json();
     return data;
   } catch (error) {

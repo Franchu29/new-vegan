@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { getEventos } from './PlatosApi';
+import { API_BASE_URL } from '../config';
 const fondo = require('../assets/fondo.webp');
 
 export default function Platos({ navigation, route }) {
@@ -60,7 +61,7 @@ export default function Platos({ navigation, route }) {
               {eventosAMostrar.map((evento) => (
                 <View key={evento.id} style={styles.itemContainer}>
                   <Image
-                    source={{ uri: `http://192.168.0.16:5000${evento.foto}` }}
+                    source={{ uri: `${API_BASE_URL}${evento.foto}` }}
                     style={styles.itemImage}
                   />
                   <Text style={{ marginTop: 5, color: 'white', textAlign: 'center' }}>

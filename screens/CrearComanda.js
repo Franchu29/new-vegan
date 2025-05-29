@@ -1,8 +1,9 @@
+import { API_BASE_URL } from '../config';
 
 export async function crearComanda(nombre_cliente, id_mesa) {
   try {
 
-    const response = await fetch('http://192.168.0.16:5000/api/crear_comanda', {
+    const response = await fetch(`${API_BASE_URL}/api/crear_comanda`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

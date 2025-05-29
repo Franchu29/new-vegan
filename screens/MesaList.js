@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API_BASE_URL } from '../config';
 
 const MesaList = ({ children }) => {
   const [mesas, setMesas] = useState([]);
@@ -9,7 +10,7 @@ const MesaList = ({ children }) => {
 
     const loadMesas = async () => {
       try {
-        const response = await fetch("http://192.168.0.16:5000/api/mesas");
+        const response = await fetch(`${API_BASE_URL}/api/mesas`);
         const data = await response.json();
 
         if (isMounted) {

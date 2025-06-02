@@ -7,12 +7,10 @@ const MesaList = ({ children }) => {
 
   useEffect(() => {
     let isMounted = true;
-
     const loadMesas = async () => {
       try {
         const response = await fetch(`${API_BASE_URL}/api/mesas`);
         const data = await response.json();
-
         if (isMounted) {
           setMesas(data);
         }
@@ -32,7 +30,21 @@ const MesaList = ({ children }) => {
     };
   }, []);
 
-  return children({ mesas, isLoading });
+  const getComandaByMesaId = async (mesaId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/comanda/${mesaId}`);
+      if (!response.ok) {
+        throw new Error("Error al obtener comanda");
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error(`API ERROR (comanda de mesa ${mesaId}):`, error);
+      return null;
+    }
+  };
+
+  return children({ mesas, isLoading, getComandaByMesaId });
 };
 
 export default MesaList;

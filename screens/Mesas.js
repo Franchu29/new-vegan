@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,19 +11,42 @@ import {
 } from 'react-native';
 const fondo = require('../assets/fondo.webp');
 import MesaList from './MesaList';
+import { API_BASE_URL } from '../config';
 
 export default function Mesas({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [mesaSeleccionada, setMesaSeleccionada] = useState(null);
+  const [comandas, setComandas] = useState([]);
+  const [loadingComandas, setLoadingComandas] = useState(false);
 
   const handleMesaPress = (item) => {
     if (item.estado === 'O') {
       setMesaSeleccionada(item);
       setModalVisible(true);
     } else {
-      console.log(`Mesa ${item.id} está libre`);
     }
   };
+
+  useEffect(() => {
+    const fetchComandas = async () => {
+      if (!mesaSeleccionada) return;
+      setLoadingComandas(true);
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/comanda/${mesaSeleccionada.id}`);
+        const data = await response.json();
+        setComandas(data);
+      } catch (error) {
+        console.error('Error al obtener comandas:', error);
+        setComandas([]);
+      } finally {
+        setLoadingComandas(false);
+      }
+    };
+
+    if (modalVisible) {
+      fetchComandas();
+    }
+  }, [mesaSeleccionada, modalVisible]);
 
   const renderMesa = ({ item }) => {
     const isDisponible = item.estado === "L";
@@ -78,21 +101,34 @@ export default function Mesas({ navigation }) {
           onRequestClose={() => setModalVisible(false)}
         >
           <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setModalVisible(false)}
-            >
-              <Text style={styles.closeButtonText}>✕</Text>
-            </TouchableOpacity>
+            <View style={styles.modalContent}>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.closeButtonText}>✕</Text>
+              </TouchableOpacity>
 
-            <Text style={styles.modalText}>Mesa {mesaSeleccionada?.id} está ocupada</Text>
+              <Text style={styles.modalText}>Mesa {mesaSeleccionada?.id} está ocupada</Text>
+
+              {loadingComandas ? (
+                <ActivityIndicator size="small" color="#0000ff" />
+              ) : comandas && comandas.id ? (
+                <View style={{ marginTop: 10, width: '100%' }}>
+                  <Text style={{ fontWeight: 'bold', marginBottom: 5 }}>Nombre del cliente:</Text>
+                  <Text>{comandas.nombre_cliente}</Text>
+
+                  <Text style={{ fontWeight: 'bold', marginTop: 10, marginBottom: 5 }}>Fecha:</Text>
+                  <Text>{new Date(comandas.fecha).toLocaleString()}</Text>
+                </View>
+              ) : (
+                <Text style={{ marginTop: 10 }}>No hay comandas.</Text>
+              )}
 
               <View style={styles.modalButtons}>
                 <TouchableOpacity
                   style={[styles.modalButton, { backgroundColor: 'green' }]}
                   onPress={() => {
-                    console.log("Botón 1 presionado");
                     setModalVisible(false);
                   }}
                 >
@@ -102,7 +138,6 @@ export default function Mesas({ navigation }) {
                 <TouchableOpacity
                   style={[styles.modalButton, { backgroundColor: 'red' }]}
                   onPress={() => {
-                    console.log("Botón 2 presionado");
                     setModalVisible(false);
                   }}
                 >
@@ -180,49 +215,50 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   modalOverlay: {
-  flex: 1,
-  backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  justifyContent: 'center',
-  alignItems: 'center',
-},
-modalContent: {
-  backgroundColor: '#fff',
-  padding: 20,
-  borderRadius: 10,
-  width: '80%',
-  alignItems: 'center',
-},
-modalText: {
-  fontSize: 18,
-  marginBottom: 20,
-  textAlign: 'center',
-},
-modalButtons: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  width: '100%',
-},
-modalButton: {
-  flex: 1,
-  padding: 10,
-  marginHorizontal: 5,
-  borderRadius: 8,
-  alignItems: 'center',
-},
-modalButtonText: {
-  color: '#fff',
-  fontWeight: 'bold',
-},
-closeButton: {
-  position: 'absolute',
-  top: 10,
-  right: 10,
-  zIndex: 1,
-  padding: 5,
-},
-closeButtonText: {
-  fontSize: 20,
-  fontWeight: 'bold',
-  color: '#333',
-},
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    width: '80%',
+    alignItems: 'center',
+  },
+  modalText: {
+    fontSize: 18,
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 20,
+  },
+  modalButton: {
+    flex: 1,
+    padding: 10,
+    marginHorizontal: 5,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  modalButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 1,
+    padding: 5,
+  },
+  closeButtonText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
+  },
 });

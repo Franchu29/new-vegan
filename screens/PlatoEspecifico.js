@@ -19,7 +19,6 @@ export default function PlatoEspecifico({ route, navigation }) {
         const data = await response.json();
         setIngredientesData(data);
         
-        // Inicializar el estado de selección
         const initialSelection = {};
         data.forEach(grupo => {
           initialSelection[grupo.id_tipoingrediente] = [];
@@ -40,17 +39,13 @@ export default function PlatoEspecifico({ route, navigation }) {
       const currentSelected = [...prev[grupoId]];
       const index = currentSelected.findIndex(item => item.id === ingrediente.id);
       
-      // Verificar si ya está seleccionado
       if (index !== -1) {
-        // Deseleccionar
         currentSelected.splice(index, 1);
       } else {
-        // Verificar límite máximo de selección
         const grupo = ingredientesData.find(g => g.id_tipoingrediente === grupoId);
         if (currentSelected.length >= grupo.max_seleccion) {
-          return prev; // No hacer cambios si se alcanzó el máximo
+          return prev;
         }
-        // Seleccionar
         currentSelected.push(ingrediente);
       }
       
@@ -67,7 +62,6 @@ export default function PlatoEspecifico({ route, navigation }) {
 
   const validateSelection = () => {
     for (const grupo of ingredientesData) {
-      // Verificar si es obligatorio y no tiene selección
       if (grupo.obligatorio && selectedIngredients[grupo.id_tipoingrediente].length === 0) {
         return false;
       }
@@ -130,7 +124,6 @@ export default function PlatoEspecifico({ route, navigation }) {
     navigation.navigate('AgregarPlato', { 
       idComanda,
       selectedIngredients,
-      // Otros parámetros que necesites pasar
     });
   };
 
@@ -138,12 +131,10 @@ export default function PlatoEspecifico({ route, navigation }) {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
-          {/* Nombre del plato */}
           <View style={styles.nombrePlatoBox}>
             <Text style={styles.nombrePlatoText}>{nombreEvento}</Text>
           </View>
 
-          {/* Imagen del plato */}
           {foto ? (
             <Image
               source={{ uri: `${API_BASE_URL}${foto}` }}
@@ -154,24 +145,20 @@ export default function PlatoEspecifico({ route, navigation }) {
             <Text style={styles.textoNoImagen}>No hay imagen disponible</Text>
           )}
           
-          {/* Descripción del plato */}
           {descripcion && (
             <Text style={styles.itemDescription}>{descripcion}</Text>
           )}
 
-          {/* Precio del plato */}
           {precio && (
             <Text style={styles.itemPrice}>Precio: ${precio}</Text>
           )}
           
-          {/* Sección de ingredientes */}
           <View style={styles.ingredientesContainer}>
             <Text style={styles.ingredientesTitulo}>Personaliza tu plato</Text>
             {renderIngredientes()}
           </View>
         </ScrollView>
 
-        {/* Pie fijo con botones y texto */}
         <View style={styles.footer}>
           <View style={styles.footerButtons}>
             <TouchableOpacity
@@ -191,6 +178,7 @@ export default function PlatoEspecifico({ route, navigation }) {
 
           <View style={styles.pedidoBox}>
             <Text style={styles.textoPedido}>Pedido de: {nombre_cliente}</Text>
+            <Text style={styles.textoPedido}>Mesa: {id_mesa}</Text>
           </View>
         </View>
       </View>
@@ -210,7 +198,7 @@ const styles = StyleSheet.create({
   scrollContainer: {
     padding: 20,
     alignItems: 'center',
-    paddingBottom: 150, // Más espacio para el footer
+    paddingBottom: 150,
   },
   nombrePlatoBox: {
     backgroundColor: 'green',
@@ -319,39 +307,39 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 5,
   },
   grupoSubTitulo: {
-    color: '#aaa',
-    fontSize: 14,
+    color: '#ddd',
     marginBottom: 10,
-    fontStyle: 'italic',
+    fontSize: 14,
   },
   ingredienteItem: {
+    backgroundColor: '#555',
+    padding: 10,
+    marginVertical: 5,
+    borderRadius: 8,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-    borderBottomWidth: 1,
-    borderColor: '#444',
-    borderRadius: 6,
-    marginVertical: 3,
-    backgroundColor: '#3a3a3a',
   },
   ingredienteSelected: {
-    backgroundColor: '#4a6b3a',
-    borderColor: '#6b8a5a',
+    backgroundColor: '#7cb342',
   },
   ingredienteNombre: {
     color: 'white',
-    fontSize: 15,
+    fontSize: 14,
   },
   ingredientePrecio: {
     color: '#FFD700',
-    fontSize: 15,
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  errorSelection: {
+    color: 'red',
+    marginTop: 5,
+    fontSize: 12,
   },
   loader: {
-    marginVertical: 20,
+    marginTop: 20,
   },
   errorText: {
     color: 'red',
@@ -362,11 +350,5 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
     marginVertical: 20,
-  },
-  errorSelection: {
-    color: '#ff6666',
-    fontSize: 13,
-    marginTop: 5,
-    fontStyle: 'italic',
   },
 });

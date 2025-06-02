@@ -21,7 +21,7 @@ export default function Mesas({ navigation }) {
   const handleMesaPress = (item) => {
     if (item.estado === 'O') {
       setMesaSeleccionada(item);
-      setModalVisible(false); // No mostrar modal, solo actualizar mensaje
+      setModalVisible(false);
     } else if (item.estado === 'L') {
       setMesaLibreSeleccionada(item);
       setMesaSeleccionada(null); // Limpiar mesa ocupada si hay

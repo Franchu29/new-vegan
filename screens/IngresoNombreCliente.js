@@ -1,33 +1,24 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, ImageBackground, TouchableOpacity, TextInput, Alert } from 'react-native';
-import { crearComanda } from './CrearComanda';
 
 const fondo = require('../assets/fondo.webp');
 
 export default function HomeScreen({ navigation, route }) {
   const { id_mesa } = route.params || {};
   const [nombre_cliente, setNombreCliente] = useState('');
-  const [loading, setLoading] = useState(false);
 
-  const handleAceptar = async () => {
+  const handleAceptar = () => {
     if (!nombre_cliente.trim()) {
       Alert.alert('Error', 'Por favor ingrese el nombre del cliente.');
       return;
     }
-    setLoading(true);
-    try {
-      const resultado = await crearComanda(nombre_cliente, id_mesa);
-      console.log('Comanda creada:', resultado);
-      navigation.navigate('Platos', {
-        nombre_cliente,
-        id_mesa,
-      });
-    } catch (error) {
-      Alert.alert('Error', 'No se pudo crear la comanda. Intente nuevamente.');
-    } finally {
-      setLoading(false);
-    }
+
+    // Solo navegación local sin llamada a API
+    navigation.navigate('Platos', {
+      nombre_cliente,
+      id_mesa,
+    });
   };
 
   return (
@@ -45,26 +36,22 @@ export default function HomeScreen({ navigation, route }) {
           placeholderTextColor="#000"
           value={nombre_cliente}
           onChangeText={setNombreCliente}
-          editable={!loading}
+          editable={true}
         />
 
         <View style={styles.footer}>
           <TouchableOpacity
             style={styles.cancelButton}
             onPress={() => navigation.goBack()}
-            disabled={loading}
           >
             <Text style={styles.cancelButtonText}>Cancelar</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.acceptButton, loading && { opacity: 0.6 }]}
+            style={styles.acceptButton}
             onPress={handleAceptar}
-            disabled={loading}
           >
-            <Text style={styles.acceptButtonText}>
-              {loading ? 'Enviando...' : 'Aceptar'}
-            </Text>
+            <Text style={styles.acceptButtonText}>Aceptar</Text>
           </TouchableOpacity>
         </View>
 

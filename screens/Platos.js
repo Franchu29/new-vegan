@@ -46,72 +46,87 @@ export default function Platos({ navigation, route }) {
     if (paginaActual < totalPaginas - 1) setPaginaActual(paginaActual + 1);
   };
 
-  return (
-    <ImageBackground source={fondo} style={styles.background}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.headerText}>Eventos</Text>
-        </View>
+return (
+  <ImageBackground source={fondo} style={styles.background}>
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.headerText}>Eventos</Text>
+      </View>
 
-        {loading ? (
-          <ActivityIndicator size="large" color="white" />
-        ) : (
-          <>
-            <View style={styles.grid}>
-              {eventosAMostrar.map((evento) => (
-                <View key={evento.id} style={styles.itemContainer}>
-                  <Image
-                    source={{ uri: `${API_BASE_URL}${evento.foto}` }}
-                    style={styles.itemImage}
-                  />
-                  <Text style={{ marginTop: 5, color: 'white', textAlign: 'center' }}>
-                    {evento.nombre}
-                  </Text>
-                </View>
-              ))}
-            </View>
-
-            <View style={styles.paginationContainer}>
+      {loading ? (
+        <ActivityIndicator size="large" color="white" />
+      ) : (
+        <>
+          <View style={styles.grid}>
+            {eventosAMostrar.map((evento) => (
               <TouchableOpacity
-                onPress={irPaginaAnterior}
-                disabled={paginaActual === 0}
-                style={[styles.pageButton, paginaActual === 0 && styles.disabledButton]}
+                key={evento.id}
+                style={styles.itemContainer}
+                onPress={() =>
+                  navigation.navigate('PlatoEspecifico', {
+                    idEvento: evento.id,
+                    nombreEvento: evento.nombre,
+                    descripcion: evento.descripcion,
+                    precio: evento.precio,
+                    nombre_cliente,
+                    id_mesa,
+                    foto: evento.foto,
+                    idComanda: evento.id_comanda,
+                  })
+                }
               >
-                <Text style={styles.pageButtonText}>←</Text>
+                <Image
+                  source={{ uri: `${API_BASE_URL}${evento.foto}` }}
+                  style={styles.itemImage}
+                />
+                <Text style={{ marginTop: 5, color: 'white', textAlign: 'center' }}>
+                  {evento.nombre}
+                </Text>
               </TouchableOpacity>
+            ))}
+          </View>
 
-              <Text style={styles.pageInfo}>
-                Página {paginaActual + 1} de {totalPaginas}
-              </Text>
+          <View style={styles.paginationContainer}>
+            <TouchableOpacity
+              onPress={irPaginaAnterior}
+              disabled={paginaActual === 0}
+              style={[styles.pageButton, paginaActual === 0 && styles.disabledButton]}
+            >
+              <Text style={styles.pageButtonText}>←</Text>
+            </TouchableOpacity>
 
-              <TouchableOpacity
-                onPress={irPaginaSiguiente}
-                disabled={paginaActual === totalPaginas - 1}
-                style={[
-                  styles.pageButton,
-                  paginaActual === totalPaginas - 1 && styles.disabledButton,
-                ]}
-              >
-                <Text style={styles.pageButtonText}>→</Text>
-              </TouchableOpacity>
-            </View>
-          </>
-        )}
+            <Text style={styles.pageInfo}>
+              Página {paginaActual + 1} de {totalPaginas}
+            </Text>
 
-        <TouchableOpacity
-          style={styles.cancelButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={styles.cancelButtonText}>Cancelar</Text>
-        </TouchableOpacity>
+            <TouchableOpacity
+              onPress={irPaginaSiguiente}
+              disabled={paginaActual === totalPaginas - 1}
+              style={[
+                styles.pageButton,
+                paginaActual === totalPaginas - 1 && styles.disabledButton,
+              ]}
+            >
+              <Text style={styles.pageButtonText}>→</Text>
+            </TouchableOpacity>
+          </View>
+        </>
+      )}
 
-        <View style={styles.footerTextContainer}>
-          <Text style={styles.footerText}>
-            Pedido de: {nombre_cliente} para Mesa: {id_mesa}
-          </Text>
-        </View>
-      </ScrollView>
-    </ImageBackground>
+      <TouchableOpacity
+        style={styles.cancelButton}
+        onPress={() => navigation.goBack()}
+      >
+        <Text style={styles.cancelButtonText}>Cancelar</Text>
+      </TouchableOpacity>
+
+      <View style={styles.footerTextContainer}>
+        <Text style={styles.footerText}>
+          Pedido de: {nombre_cliente} para Mesa: {id_mesa}
+        </Text>
+      </View>
+    </ScrollView>
+  </ImageBackground>
   );
 }
 

@@ -154,7 +154,13 @@ const ResumenPedido = () => {
 
           <TouchableOpacity
             style={styles.botonMas}
-            onPress={() => navigation.navigate('Platos', { datos })}
+            onPress={() =>
+              navigation.navigate('Platos', {
+                datos,
+                id_mesa: datos[0]?.id_mesa,
+                nombre_cliente: datos[0]?.nombre_cliente,
+              })
+            }
           >
             <Text style={styles.botonMasTexto}>+</Text>
           </TouchableOpacity>

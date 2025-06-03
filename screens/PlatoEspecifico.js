@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, SafeAreaView, ActivityIndicator, Alert, Button, Modal } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, SafeAreaView, ActivityIndicator, Alert } from 'react-native';
 import { API_BASE_URL } from '../config';
 
 export default function PlatoEspecifico({ route, navigation }) {
-  const { idEvento, nombreEvento, nombre_cliente, id_mesa, foto, idComanda, precio, descripcion } = route.params || {};
+  const { idEvento, nombreEvento, nombre_cliente, id_mesa, foto, precio, descripcion } = route.params || {};
   const [ingredientesData, setIngredientesData] = useState([]);
   const [selectedIngredients, setSelectedIngredients] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [selecciones, setSelecciones] = useState([]);
 
   useEffect(() => {
     console.log('Datos recibidos:', {
       idEvento,
       nombre_cliente,
-      id_mesa,
-      idComanda
+      id_mesa
     });
 
     const fetchIngredientes = async () => {
@@ -46,7 +46,7 @@ export default function PlatoEspecifico({ route, navigation }) {
       fetchIngredientes();
     } else {
       setError('No se proporcionó ID de plato');
-      }
+    }
   }, [idEvento]);
 
   const handleSelectIngredient = (grupoId, ingrediente) => {
@@ -130,7 +130,7 @@ export default function PlatoEspecifico({ route, navigation }) {
     ));
   };
 
-  const handleAdvance = async () => {
+  const handleAdvance = () => {
     if (!validateSelection()) {
       Alert.alert('Error', 'Debes completar todas las selecciones obligatorias');
       return;
@@ -141,95 +141,31 @@ export default function PlatoEspecifico({ route, navigation }) {
       return;
     }
 
-    setIsSubmitting(true);
-
-    try {
-      // 1. Crear comanda si no existe
-      let comandaId = idComanda;
-      
-      if (!comandaId) {
-        const comandaResponse = await fetch(`${API_BASE_URL}/api/crear_comanda`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            id_mesa: id_mesa,
-            nombre_cliente: nombre_cliente,
-            estado: 'E' // Estado 'En curso'
-          })
-        });
-
-        if (!comandaResponse.ok) {
-          const errorData = await comandaResponse.json().catch(() => ({}));
-          throw new Error(errorData.error || 'Error al crear comanda');
-        }
-
-        const comandaData = await comandaResponse.json();
-        comandaId = comandaData.id_comanda;
-        console.log('Comanda creada con ID:', comandaId);
-      }
-
-      // 2. Agregar plato a la comanda
-      const platoResponse = await fetch(`${API_BASE_URL}/api/comanda/${comandaId}/agregar_plato`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          id_plato: idEvento
-        })
-      });
-
-      if (!platoResponse.ok) {
-        const errorData = await platoResponse.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Error al agregar plato');
-      }
-
-      const platoData = await platoResponse.json();
-      const idPlatoxComanda = platoData.idplatoxcomanda;
-      console.log('Plato agregado con ID:', idPlatoxComanda);
-
-      // 3. Agregar ingredientes seleccionados
-      const allIngredients = [];
-      for (const grupoId in selectedIngredients) {
-        allIngredients.push(...selectedIngredients[grupoId].map(ing => ({
-          id_ingrediente: ing.id,
-          precio: ing.precio || null
-        })));
-      }
-
-      if (allIngredients.length > 0) {
-        const ingredientesResponse = await fetch(
-          `${API_BASE_URL}/api/comanda/plato/${idPlatoxComanda}/agregar_ingredientes`, 
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              ingredientes: allIngredients
-            })
-          }
-        );
-
-        if (!ingredientesResponse.ok) {
-          const errorData = await ingredientesResponse.json().catch(() => ({}));
-          throw new Error(errorData.error || 'Error al agregar ingredientes');
-        }
-
-        console.log('Ingredientes agregados:', allIngredients.length);
-      }
-
-      // Navegar a pantalla de confirmación
-      setShowSuccess(true);
-
-    } catch (error) {
-      console.error('Error completo:', error);
-      Alert.alert('Error', error.message);
-    } finally {
-      setIsSubmitting(false);
+    const ingredientesSeleccionadosParaEnviar = [];
+    for (const grupoId in selectedIngredients) {
+      ingredientesSeleccionadosParaEnviar.push(...selectedIngredients[grupoId]);
     }
+
+    const nuevaSeleccion = {
+      idEvento,
+      nombreEvento,
+      nombre_cliente,
+      id_mesa,
+      foto,
+      precio,
+      descripcion,
+      ingredientesSeleccionados: ingredientesSeleccionadosParaEnviar
+    };
+
+    // Guarda la nueva selección 
+    setSelecciones(prev => {
+      const nuevasSelecciones = [...prev, nuevaSeleccion];
+
+      // Lo pasa a la siguiente vista
+      navigation.navigate('ResumenPedido', { datos: nuevasSelecciones });
+
+      return nuevasSelecciones;
+    });
   };
 
   return (
@@ -282,52 +218,15 @@ export default function PlatoEspecifico({ route, navigation }) {
               onPress={handleAdvance}
               disabled={isSubmitting}
             >
-              {isSubmitting ? (
-                <ActivityIndicator color="white" />
-              ) : (
-                <Text style={styles.textoBoton}>Avanzar</Text>
-              )}
+              <Text style={styles.textoBoton}>Avanzar</Text>
             </TouchableOpacity>
           </View>
 
           <View style={styles.pedidoBox}>
             <Text style={styles.textoPedido}>Pedido de: {nombre_cliente}</Text>
             <Text style={styles.textoPedido}>Mesa: {id_mesa}</Text>
-            {idComanda && <Text style={styles.textoPedido}>Comanda: {idComanda}</Text>}
           </View>
         </View>
-
-        <Modal
-          visible={showSuccess}
-          transparent={true}
-          animationType="slide"
-          onRequestClose={() => setShowSuccess(false)}
-        >
-          <View style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: 'rgba(0,0,0,0.5)'
-          }}>
-            <View style={{
-              backgroundColor: 'white',
-              padding: 24,
-              borderRadius: 8,
-              alignItems: 'center'
-            }}>
-              <Text style={{ fontSize: 18, marginBottom: 12 }}>
-                ¡Comanda creada exitosamente para la mesa {id_mesa}!
-              </Text>
-              <Button
-                title="Ir a comanda"
-                onPress={() => {
-                  setShowSuccess(false);
-                  navigation.navigate('VerComanda', { idComanda, mesa: id_mesa });
-                }}
-              />
-            </View>
-          </View>
-        </Modal>
       </View>
     </SafeAreaView>
   );
@@ -463,7 +362,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   ingredienteSelected: {
-    backgroundColor: '#7cb342',
+    backgroundColor: '#0a6',
   },
   ingredienteNombre: {
     color: 'white',
@@ -472,24 +371,20 @@ const styles = StyleSheet.create({
   ingredientePrecio: {
     color: '#FFD700',
     fontWeight: '600',
-    fontSize: 14,
-  },
-  errorSelection: {
-    color: 'red',
-    marginTop: 5,
-    fontSize: 12,
-  },
-  loader: {
-    marginTop: 20,
   },
   errorText: {
     color: 'red',
+    fontSize: 16,
     textAlign: 'center',
-    marginVertical: 20,
   },
   noIngredientsText: {
     color: 'white',
+    fontSize: 16,
     textAlign: 'center',
-    marginVertical: 20,
+  },
+  errorSelection: {
+    color: 'red',
+    fontSize: 13,
+    marginTop: 5,
   },
 });

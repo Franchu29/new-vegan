@@ -6,6 +6,7 @@ import IngresoNombreCliente from './screens/IngresoNombreCliente';
 import MesaComanda from './screens/MesaComanda';
 import Platos from './screens/Platos';
 import PlatoEspecifico from './screens/PlatoEspecifico';
+import ResumenPedido from './screens/ResumenPedido';
 
 const Stack = createNativeStackNavigator();
 
@@ -41,6 +42,11 @@ export default function App() {
         <Stack.Screen 
           name="PlatoEspecifico" 
           component={PlatoEspecifico} 
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen 
+          name="ResumenPedido" 
+          component={ResumenPedido} 
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

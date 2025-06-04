@@ -12,15 +12,15 @@ import {
 } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { API_BASE_URL } from '../config';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const fondo = require('../assets/fondo.webp');
 
 const ResumenPedido = () => {
 
-
   const route = useRoute();
   const navigation = useNavigation();
-  const { datos } = route.params || {};
+  const [datos, setDatos] = useState(route.params?.datos || {});
   console.log('Platos: ResumenPedido', datos);
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -108,6 +108,12 @@ const ResumenPedido = () => {
     }
   };
 
+  const eliminarPlato = (index) => {
+    const nuevosPlatos = [...(datos.platos || [])];
+    nuevosPlatos.splice(index, 1);
+    setDatos({ ...datos, platos: nuevosPlatos });
+  };
+
   return (
     <ImageBackground source={fondo} style={styles.safeArea} resizeMode="cover">
       <View style={styles.container}>
@@ -151,6 +157,25 @@ const ResumenPedido = () => {
                     No hay ingredientes seleccionados.
                   </Text>
                 )}
+                <View style={styles.buttonContainer}>
+                  {/* Botón editar */}
+                  <TouchableOpacity
+                    style={styles.editButton}
+                    onPress={() => {
+                      Alert.alert('Editar', `Editar el plato: ${item.nombreEvento}`);
+                    }}
+                  >
+                    <Icon name="pencil" size={24} color="#fff" />
+                  </TouchableOpacity>
+
+                  {/* Botón eliminar */}
+                  <TouchableOpacity
+                    style={styles.deleteButton}
+                    onPress={() => eliminarPlato(index)}
+                  >
+                    <Icon name="trash-can" size={24} color="#fff" />
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
           ))}
@@ -346,6 +371,42 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  itemButton: {
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: '#007AFF',
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  itemButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    gap: 10, // si tu versión lo soporta
+    marginTop: 10,
+  },
+
+  editButton: {
+    backgroundColor: 'green',
+    padding: 10,
+    borderRadius: 50,
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  deleteButton: {
+    backgroundColor: 'red',
+    padding: 10,
+    borderRadius: 50,
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
 });
 
 export default ResumenPedido;

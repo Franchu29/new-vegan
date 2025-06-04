@@ -14,7 +14,8 @@ import { API_BASE_URL } from '../config';
 const fondo = require('../assets/fondo.webp');
 
 export default function Platos({ navigation, route }) {
-  const { nombre_cliente, id_mesa } = route.params || {};
+  const { datos } = route.params || {};
+
 
   const [eventos, setEventos] = useState([]);
   const [paginaActual, setPaginaActual] = useState(0);
@@ -64,14 +65,13 @@ return (
                 style={styles.itemContainer}
                 onPress={() =>
                   navigation.navigate('PlatoEspecifico', {
+                    datos,
                     idEvento: evento.id,
                     nombreEvento: evento.nombre,
                     descripcion: evento.descripcion,
                     precio: evento.precio,
-                    nombre_cliente,
-                    id_mesa,
                     foto: evento.foto,
-                    idComanda: evento.id_comanda,
+                    idComanda: evento.id_comanda
                   })
                 }
               >
@@ -122,7 +122,7 @@ return (
 
       <View style={styles.footerTextContainer}>
         <Text style={styles.footerText}>
-          Pedido de: {nombre_cliente} para Mesa: {id_mesa}
+          Pedido de: {datos.nombre_cliente} para Mesa: {datos.id_mesa}
         </Text>
       </View>
     </ScrollView>

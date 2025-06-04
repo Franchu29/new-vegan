@@ -14,11 +14,13 @@ export default function HomeScreen({ navigation, route }) {
       return;
     }
 
-    // Solo navegación local sin llamada a API
-    navigation.navigate('Platos', {
-      nombre_cliente,
-      id_mesa,
-    });
+  const datos = {
+    nombre_cliente,
+    id_mesa,
+    platos: []
+  };
+
+  navigation.navigate('Platos', { datos });
   };
 
   return (

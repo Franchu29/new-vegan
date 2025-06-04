@@ -3,7 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, SafeAreaVi
 import { API_BASE_URL } from '../config';
 
 export default function PlatoEspecifico({ route, navigation }) {
-  const { idEvento, nombreEvento, nombre_cliente, id_mesa, foto, precio, descripcion } = route.params || {};
+  const { datos, idEvento, nombreEvento, descripcion, precio, foto } = route.params || {};
+  const { nombre_cliente, id_mesa } = datos || {};
   const [ingredientesData, setIngredientesData] = useState([]);
   const [selectedIngredients, setSelectedIngredients] = useState({});
   const [loading, setLoading] = useState(true);
@@ -157,15 +158,20 @@ export default function PlatoEspecifico({ route, navigation }) {
       ingredientesSeleccionados: ingredientesSeleccionadosParaEnviar
     };
 
-    // Guarda la nueva selección 
-    setSelecciones(prev => {
-      const nuevasSelecciones = [...prev, nuevaSeleccion];
+    // Obtenemos los datos anteriores o se inicializa si no existen
+    const datosAnteriores = datos || {
+      nombre_cliente,
+      id_mesa,
+      platos: []
+    };
 
-      // Lo pasa a la siguiente vista
-      navigation.navigate('ResumenPedido', { datos: nuevasSelecciones });
+    // Se crea el nuevo objeto de datos actualizado con el nuevo plato
+    const datosActualizados = {
+      ...datosAnteriores,
+      platos: [...(datosAnteriores.platos || []), nuevaSeleccion]
+    };
 
-      return nuevasSelecciones;
-    });
+    navigation.navigate('ResumenPedido', { datos: datosActualizados });
   };
 
   return (

@@ -16,21 +16,24 @@ import { API_BASE_URL } from '../config';
 const fondo = require('../assets/fondo.webp');
 
 const ResumenPedido = () => {
+
+
   const route = useRoute();
   const navigation = useNavigation();
-  const { datos } = route.params || { datos: [] };
+  const { datos } = route.params || {};
+  console.log('Platos: ResumenPedido', datos);
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const generarComanda = async () => {
-    if (datos.length === 0) return;
+    if (!datos || !datos.platos || datos.platos.length === 0) return;
 
     setIsSubmitting(true);
 
     try {
       let comandaId = null;
 
-      const { id_mesa, nombre_cliente } = datos[0];
+      const { id_mesa, nombre_cliente, platos } = datos;
 
       // 1. Crear comanda
       const comandaResponse = await fetch(`${API_BASE_URL}/api/crear_comanda`, {
@@ -54,7 +57,7 @@ const ResumenPedido = () => {
       comandaId = comandaData.id_comanda;
 
       // 2. Agregar cada plato
-      for (const item of datos) {
+      for (const item of platos) {
         const platoResponse = await fetch(`${API_BASE_URL}/api/comanda/${comandaId}/agregar_plato`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -113,7 +116,7 @@ const ResumenPedido = () => {
         </View>
 
         <ScrollView contentContainerStyle={styles.scrollContainer}>
-          {datos.map((item, index) => (
+          {datos.platos?.map((item, index) => (
             <View key={index} style={styles.card}>
               <Image
                 source={{ uri: `${API_BASE_URL}${item.foto}` }}
@@ -155,11 +158,7 @@ const ResumenPedido = () => {
           <TouchableOpacity
             style={styles.botonMas}
             onPress={() =>
-              navigation.navigate('Platos', {
-                datos,
-                id_mesa: datos[0]?.id_mesa,
-                nombre_cliente: datos[0]?.nombre_cliente,
-              })
+              navigation.navigate('Platos', {datos,})
             }
           >
             <Text style={styles.botonMasTexto}>+</Text>

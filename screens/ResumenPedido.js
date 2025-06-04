@@ -118,47 +118,49 @@ const ResumenPedido = () => {
     <ImageBackground source={fondo} style={styles.safeArea} resizeMode="cover">
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.headerText}>Pedido</Text>
+          <Text style={styles.headerText}>Pedido de: <Text style={styles.boldText}>{datos.nombre_cliente}</Text> para la mesa <Text style={styles.boldText}>{datos.id_mesa}</Text>
+            </Text>
         </View>
 
         <ScrollView contentContainerStyle={styles.scrollContainer}>
-          {datos.platos?.map((item, index) => (
-            <View key={index} style={styles.card}>
-              <Image
-                source={{ uri: `${API_BASE_URL}${item.foto}` }}
-                style={styles.itemImage}
-                resizeMode="cover"
-              />
-              <View style={styles.infoContainer}>
-                <Text style={styles.nombrePlatoText}>{item.nombreEvento}</Text>
+          /* Mostrar solo una vez los datos del cliente y mesa */}
 
-                <Text style={styles.label}>Cliente:</Text>
-                <Text style={styles.value}>{item.nombre_cliente}</Text>
+                {datos.platos?.map((item, index) => (
+                <View key={index} style={styles.card}>
+                  <Image
+                  source={{ uri: `${API_BASE_URL}${item.foto}` }}
+                  style={styles.itemImage}
+                  resizeMode="cover"
+                  />
+                  <View style={styles.infoContainer}>
+                  <Text style={styles.nombrePlatoText}>{item.nombreEvento}</Text>
 
-                <Text style={styles.label}>Mesa:</Text>
-                <Text style={styles.value}>{item.id_mesa}</Text>
+                  <Text style={styles.label}>Descripción:</Text>
+                  {item.descripcion && item.descripcion.trim().length > 0 ? (
+                    <Text style={styles.value}>{item.descripcion}</Text>
+                  ) : (
+                    <Text style={styles.value}>
+                    Sin descripción
+                    </Text>
+                  )}
 
-                <Text style={styles.label}>Descripción:</Text>
-                <Text style={styles.value}>{item.descripcion}</Text>
+                  <Text style={styles.label}>Precio:</Text>
+                  <Text style={styles.value}>${item.precio}</Text>
 
-                <Text style={styles.label}>Precio:</Text>
-                <Text style={styles.value}>${item.precio}</Text>
-
-                <Text style={styles.label}>Ingredientes:</Text>
-                {item.ingredientesSeleccionados?.length > 0 ? (
-                  item.ingredientesSeleccionados.map((ing, i) => (
+                  <Text style={styles.label}>Ingredientes:</Text>
+                  {item.ingredientesSeleccionados?.length > 0 ? (
+                    item.ingredientesSeleccionados.map((ing, i) => (
                     <View key={i} style={styles.ingredienteItem}>
                       <Text style={styles.ingredienteNombre}>{ing.nombre}</Text>
-                      <Text style={styles.ingredientePrecio}>${ing.precio || 0}</Text>
                     </View>
-                  ))
-                ) : (
-                  <Text style={styles.noIngredientsText}>
+                    ))
+                  ) : (
+                    <Text style={styles.noIngredientsText}>
                     No hay ingredientes seleccionados.
-                  </Text>
-                )}
-                <View style={styles.buttonContainer}>
-                  {/* Botón editar */}
+                    </Text>
+                  )}
+                  <View style={styles.buttonContainer}>
+                    {/* Botón editar */}
                   <TouchableOpacity
                     style={styles.editButton}
                     onPress={() => {
@@ -183,19 +185,11 @@ const ResumenPedido = () => {
           <TouchableOpacity
             style={styles.botonMas}
             onPress={() =>
-              navigation.navigate('Platos', {datos,})
+              navigation.navigate('Platos', { datos })
             }
           >
             <Text style={styles.botonMasTexto}>+</Text>
           </TouchableOpacity>
-
-          {datos.length > 0 && (
-            <View style={styles.pedidoResumenContainer}>
-              <Text style={styles.pedidoResumen}>
-                Pedido de: <Text style={styles.boldText}>{datos[0].nombre_cliente}</Text> para la mesa <Text style={styles.boldText}>{datos[0].id_mesa}</Text>
-              </Text>
-            </View>
-          )}
         </ScrollView>
 
         <View style={styles.footer}>
@@ -333,7 +327,6 @@ const styles = StyleSheet.create({
   },
   boldText: {
     fontWeight: 'bold',
-    color: 'black',
   },
   pedidoResumen: {
     fontSize: 16,

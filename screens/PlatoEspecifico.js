@@ -3,23 +3,18 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, SafeAreaVi
 import { API_BASE_URL } from '../config';
 
 export default function PlatoEspecifico({ route, navigation }) {
-  const { datos, idEvento, nombreEvento, descripcion, precio, foto } = route.params || {};
+  const { datos, idEvento, nombreEvento, descripcion, precio: precioBase, foto } = route.params || {};
   const { nombre_cliente, id_mesa } = datos || {};
   const [ingredientesData, setIngredientesData] = useState([]);
   const [selectedIngredients, setSelectedIngredients] = useState({});
+  const [proteinaSeleccionada, setProteinaSeleccionada] = useState(null);
+  const [precioTotal, setPrecioTotal] = useState(precioBase || 0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [selecciones, setSelecciones] = useState([]);
+  const [esTipoEspecial, setEsTipoEspecial] = useState(false);
 
   useEffect(() => {
-    console.log('Datos recibidos:', {
-      idEvento,
-      nombre_cliente,
-      id_mesa
-    });
-
     const fetchIngredientes = async () => {
       try {
         const response = await fetch(`${API_BASE_URL}/api/reglas_ingredientes/${idEvento}`);
@@ -27,17 +22,36 @@ export default function PlatoEspecifico({ route, navigation }) {
           const errorData = await response.json().catch(() => ({}));
           throw new Error(errorData.error || 'Error al obtener los ingredientes');
         }
-        const data = await response.json();
-        setIngredientesData(data);
-        
+        const responseData = await response.json();
+
+        setEsTipoEspecial(responseData.es_tipo_especial || false);
+        const reglas = Array.isArray(responseData.reglas) ? responseData.reglas : [];
+        setIngredientesData(reglas);
+
+        // Inicializar selecciones
         const initialSelection = {};
-        data.forEach(grupo => {
-          initialSelection[grupo.id_tipoingrediente] = [];
+        let proteinaInicial = null;
+
+        reglas.forEach(grupo => {
+          if (grupo && grupo.id_tipoingrediente) {
+            initialSelection[grupo.id_tipoingrediente] = [];
+
+            // Si es tipo especial, buscar el primer ingrediente principal (proteína)
+            if (responseData.es_tipo_especial && grupo.ingredientes?.some(i => i.es_principal)) {
+              const primeraProteina = grupo.ingredientes.find(i => i.es_principal);
+              if (primeraProteina) {
+                initialSelection[grupo.id_tipoingrediente] = [primeraProteina];
+                proteinaInicial = primeraProteina.id.toString();
+              }
+            }
+          }
         });
+
         setSelectedIngredients(initialSelection);
+        setProteinaSeleccionada(proteinaInicial);
       } catch (err) {
         console.error('Error al cargar ingredientes:', err);
-        setError(err.message);
+        setError(err.message || 'Error al cargar los ingredientes');
       } finally {
         setLoading(false);
       }
@@ -47,28 +61,43 @@ export default function PlatoEspecifico({ route, navigation }) {
       fetchIngredientes();
     } else {
       setError('No se proporcionó ID de plato');
+      setLoading(false);
     }
   }, [idEvento]);
 
   const handleSelectIngredient = (grupoId, ingrediente) => {
+    if (!ingrediente || !grupoId) return;
+
+    const grupo = ingredientesData.find(g => g.id_tipoingrediente === grupoId);
+    if (!grupo) return;
+
+    // Si es tipo especial y es un ingrediente principal
+    if (esTipoEspecial && ingrediente.es_principal) {
+      setProteinaSeleccionada(ingrediente.id.toString());
+
+      // Forzar selección única para ingredientes principales en tipo especial
+      setSelectedIngredients(prev => ({
+        ...prev,
+        [grupoId]: [ingrediente]
+      }));
+      return;
+    }
+
     setSelectedIngredients(prev => {
-      const currentSelected = [...prev[grupoId]];
+      const currentSelected = [...(prev[grupoId] || [])];
       const index = currentSelected.findIndex(item => item.id === ingrediente.id);
-      
+
       if (index !== -1) {
         currentSelected.splice(index, 1);
       } else {
-        const grupo = ingredientesData.find(g => g.id_tipoingrediente === grupoId);
-        if (currentSelected.length >= grupo.max_seleccion) {
-          return prev;
+        if (grupo.max_seleccion === 1) {
+          return { ...prev, [grupoId]: [ingrediente] };
+        } else if (currentSelected.length < (grupo.max_seleccion || 1)) {
+          currentSelected.push(ingrediente);
         }
-        currentSelected.push(ingrediente);
       }
-      
-      return {
-        ...prev,
-        [grupoId]: currentSelected
-      };
+
+      return { ...prev, [grupoId]: currentSelected };
     });
   };
 
@@ -77,13 +106,54 @@ export default function PlatoEspecifico({ route, navigation }) {
   };
 
   const validateSelection = () => {
+    if (!ingredientesData || !Array.isArray(ingredientesData)) return false;
+
     for (const grupo of ingredientesData) {
-      if (grupo.obligatorio && selectedIngredients[grupo.id_tipoingrediente].length === 0) {
+      if (grupo.obligatorio && (!selectedIngredients[grupo.id_tipoingrediente] ||
+          selectedIngredients[grupo.id_tipoingrediente].length === 0)) {
         return false;
       }
     }
     return true;
   };
+
+  useEffect(() => {
+    let total = precioBase || 0;
+
+    if (typeof selectedIngredients !== 'object' || selectedIngredients === null) {
+      setPrecioTotal(total);
+      return;
+    }
+
+    Object.values(selectedIngredients).forEach(ingredientesGrupo => {
+      if (!Array.isArray(ingredientesGrupo)) return;
+
+      ingredientesGrupo.forEach(ingrediente => {
+        if (!ingrediente) return;
+
+        if (esTipoEspecial) {
+          // Para tipo especial, manejar precios dinámicos
+          if (ingrediente.es_principal) {
+            // Sumar el precio del ingrediente principal directamente
+            total += parseInt(ingrediente.precio || 0);
+          } else {
+            // Para otros ingredientes, buscar precio específico por proteína seleccionada
+            if (proteinaSeleccionada && ingrediente.precios && ingrediente.precios[proteinaSeleccionada]) {
+              total += parseInt(ingrediente.precios[proteinaSeleccionada]);
+            } else if (ingrediente.precio) {
+              // Si no hay precio específico, usar el precio general
+              total += parseInt(ingrediente.precio);
+            }
+          }
+        } else {
+          // Para otros tipos de plato, sumar el precio normal
+          total += parseInt(ingrediente.precio || 0);
+        }
+      });
+    });
+
+    setPrecioTotal(total);
+  }, [selectedIngredients, proteinaSeleccionada, precioBase, esTipoEspecial]);
 
   const renderIngredientes = () => {
     if (loading) {
@@ -94,37 +164,53 @@ export default function PlatoEspecifico({ route, navigation }) {
       return <Text style={styles.errorText}>{error}</Text>;
     }
 
+    if (!ingredientesData || !Array.isArray(ingredientesData)) {
+      return <Text style={styles.errorText}>Formato de datos incorrecto</Text>;
+    }
+
     if (ingredientesData.length === 0) {
       return <Text style={styles.noIngredientsText}>No hay ingredientes disponibles</Text>;
     }
 
     return ingredientesData.map((grupo, index) => (
-      <View key={index} style={styles.ingredienteGrupo}>
+      <View key={`${grupo.id_tipoingrediente}-${index}`} style={styles.ingredienteGrupo}>
         <Text style={styles.grupoTitulo}>
-          {grupo.tipo_ingrediente_nombre} 
+          {grupo.tipo_ingrediente_nombre}
           {grupo.obligatorio ? ' (Obligatorio)' : ''}
         </Text>
         <Text style={styles.grupoSubTitulo}>
-          {`Seleccionados: ${selectedIngredients[grupo.id_tipoingrediente]?.length || 0}/${grupo.max_seleccion}`}
+          {`Seleccionados: ${selectedIngredients[grupo.id_tipoingrediente]?.length || 0}/${grupo.max_seleccion || 1}`}
         </Text>
-        
-        {grupo.ingredientes.map((ingrediente) => (
-          <TouchableOpacity 
-            key={ingrediente.id} 
-            style={[
-              styles.ingredienteItem,
-              isIngredientSelected(grupo.id_tipoingrediente, ingrediente.id) && styles.ingredienteSelected
-            ]}
-            onPress={() => handleSelectIngredient(grupo.id_tipoingrediente, ingrediente)}
-          >
-            <Text style={styles.ingredienteNombre}>{ingrediente.nombre}</Text>
-            {ingrediente.precio && (
-              <Text style={styles.ingredientePrecio}>+${ingrediente.precio}</Text>
-            )}
-          </TouchableOpacity>
-        ))}
-        
-        {grupo.obligatorio && selectedIngredients[grupo.id_tipoingrediente].length === 0 && (
+
+        {grupo.ingredientes?.map((ingrediente) => {
+          let precioMostrar = ingrediente.precio;
+
+          // Mostrar precio específico para tipo especial si existe
+          if (esTipoEspecial && !ingrediente.es_principal && proteinaSeleccionada && ingrediente.precios) {
+            precioMostrar = ingrediente.precios[proteinaSeleccionada] || ingrediente.precio;
+          }
+
+          return (
+            <TouchableOpacity
+              key={ingrediente.id}
+              style={[
+                styles.ingredienteItem,
+                isIngredientSelected(grupo.id_tipoingrediente, ingrediente.id) && styles.ingredienteSelected
+              ]}
+              onPress={() => handleSelectIngredient(grupo.id_tipoingrediente, ingrediente)}
+            >
+              <Text style={styles.ingredienteNombre}>{ingrediente.nombre}</Text>
+              {precioMostrar !== null && (
+                <Text style={styles.ingredientePrecio}>
+                  {precioMostrar !== undefined ? `+$${precioMostrar}` : ''}
+                </Text>
+              )}
+            </TouchableOpacity>
+          );
+        })}
+
+        {grupo.obligatorio && (!selectedIngredients[grupo.id_tipoingrediente] ||
+          selectedIngredients[grupo.id_tipoingrediente].length === 0) && (
           <Text style={styles.errorSelection}>Debes seleccionar al menos 1 ingrediente</Text>
         )}
       </View>
@@ -144,7 +230,9 @@ export default function PlatoEspecifico({ route, navigation }) {
 
     const ingredientesSeleccionadosParaEnviar = [];
     for (const grupoId in selectedIngredients) {
-      ingredientesSeleccionadosParaEnviar.push(...selectedIngredients[grupoId]);
+      if (Array.isArray(selectedIngredients[grupoId])) {
+        ingredientesSeleccionadosParaEnviar.push(...selectedIngredients[grupoId]);
+      }
     }
 
     const nuevaSeleccion = {
@@ -153,19 +241,17 @@ export default function PlatoEspecifico({ route, navigation }) {
       nombre_cliente,
       id_mesa,
       foto,
-      precio,
+      precio: precioTotal,
       descripcion,
       ingredientesSeleccionados: ingredientesSeleccionadosParaEnviar
     };
 
-    // Obtenemos los datos anteriores o se inicializa si no existen
     const datosAnteriores = datos || {
       nombre_cliente,
       id_mesa,
       platos: []
     };
 
-    // Se crea el nuevo objeto de datos actualizado con el nuevo plato
     const datosActualizados = {
       ...datosAnteriores,
       platos: [...(datosAnteriores.platos || []), nuevaSeleccion]
@@ -191,15 +277,13 @@ export default function PlatoEspecifico({ route, navigation }) {
           ) : (
             <Text style={styles.textoNoImagen}>No hay imagen disponible</Text>
           )}
-          
+
           {descripcion && (
             <Text style={styles.itemDescription}>{descripcion}</Text>
           )}
 
-          {precio && (
-            <Text style={styles.itemPrice}>Precio: ${precio}</Text>
-          )}
-          
+          <Text style={styles.itemPrice}>Precio total: ${precioTotal}</Text>
+
           <View style={styles.ingredientesContainer}>
             <Text style={styles.ingredientesTitulo}>Personaliza tu plato</Text>
             {renderIngredientes()}
@@ -376,7 +460,8 @@ const styles = StyleSheet.create({
   },
   ingredientePrecio: {
     color: '#FFD700',
-    fontWeight: '600',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
   errorText: {
     color: 'red',
@@ -393,4 +478,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginTop: 5,
   },
+  loader: {
+    marginTop: 50,
+  }
 });

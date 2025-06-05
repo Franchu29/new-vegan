@@ -63,6 +63,7 @@ const ResumenPedido = () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             id_plato: item.idEvento,
+            precio: item.precio,
           }),
         });
 

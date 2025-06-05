@@ -8,11 +8,13 @@ export default function PlatoEspecifico({ route, navigation }) {
   const [ingredientesData, setIngredientesData] = useState([]);
   const [selectedIngredients, setSelectedIngredients] = useState({});
   const [proteinaSeleccionada, setProteinaSeleccionada] = useState(null);
+  const [baseChorrillanaSeleccionada, setBaseChorrillanaSeleccionada] = useState(null);
   const [precioTotal, setPrecioTotal] = useState(precioBase || 0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [esTipoEspecial, setEsTipoEspecial] = useState(false);
+  const [esChorrillana, setEsChorrillana] = useState(false);
 
   useEffect(() => {
     const fetchIngredientes = async () => {
@@ -25,12 +27,14 @@ export default function PlatoEspecifico({ route, navigation }) {
         const responseData = await response.json();
 
         setEsTipoEspecial(responseData.es_tipo_especial || false);
+        setEsChorrillana(responseData.es_chorrillana || false);
         const reglas = Array.isArray(responseData.reglas) ? responseData.reglas : [];
         setIngredientesData(reglas);
 
         // Inicializar selecciones
         const initialSelection = {};
         let proteinaInicial = null;
+        let baseChorrillanaInicial = null;
 
         reglas.forEach(grupo => {
           if (grupo && grupo.id_tipoingrediente) {
@@ -44,11 +48,21 @@ export default function PlatoEspecifico({ route, navigation }) {
                 proteinaInicial = primeraProteina.id.toString();
               }
             }
+            
+            // Si es chorrillana, buscar la primera base (2p o 4p)
+            if (responseData.es_chorrillana && grupo.ingredientes?.some(i => i.es_base_chorrillana)) {
+              const primeraBase = grupo.ingredientes.find(i => i.es_base_chorrillana);
+              if (primeraBase) {
+                initialSelection[grupo.id_tipoingrediente] = [primeraBase];
+                baseChorrillanaInicial = primeraBase.id.toString();
+              }
+            }
           }
         });
 
         setSelectedIngredients(initialSelection);
         setProteinaSeleccionada(proteinaInicial);
+        setBaseChorrillanaSeleccionada(baseChorrillanaInicial);
       } catch (err) {
         console.error('Error al cargar ingredientes:', err);
         setError(err.message || 'Error al cargar los ingredientes');
@@ -74,8 +88,16 @@ export default function PlatoEspecifico({ route, navigation }) {
     // Si es tipo especial y es un ingrediente principal
     if (esTipoEspecial && ingrediente.es_principal) {
       setProteinaSeleccionada(ingrediente.id.toString());
+      setSelectedIngredients(prev => ({
+        ...prev,
+        [grupoId]: [ingrediente]
+      }));
+      return;
+    }
 
-      // Forzar selección única para ingredientes principales en tipo especial
+    // Si es chorrillana y es la base (2p o 4p)
+    if (esChorrillana && ingrediente.es_base_chorrillana) {
+      setBaseChorrillanaSeleccionada(ingrediente.id.toString());
       setSelectedIngredients(prev => ({
         ...prev,
         [grupoId]: [ingrediente]
@@ -134,14 +156,22 @@ export default function PlatoEspecifico({ route, navigation }) {
         if (esTipoEspecial) {
           // Para tipo especial, manejar precios dinámicos
           if (ingrediente.es_principal) {
-            // Sumar el precio del ingrediente principal directamente
             total += parseInt(ingrediente.precio || 0);
           } else {
-            // Para otros ingredientes, buscar precio específico por proteína seleccionada
             if (proteinaSeleccionada && ingrediente.precios && ingrediente.precios[proteinaSeleccionada]) {
               total += parseInt(ingrediente.precios[proteinaSeleccionada]);
             } else if (ingrediente.precio) {
-              // Si no hay precio específico, usar el precio general
+              total += parseInt(ingrediente.precio);
+            }
+          }
+        } else if (esChorrillana) {
+          // Para chorrillana, manejar precios dinámicos
+          if (ingrediente.es_base_chorrillana) {
+            total += parseInt(ingrediente.precio || 0);
+          } else {
+            if (baseChorrillanaSeleccionada && ingrediente.precios && ingrediente.precios[baseChorrillanaSeleccionada]) {
+              total += parseInt(ingrediente.precios[baseChorrillanaSeleccionada]);
+            } else if (ingrediente.precio) {
               total += parseInt(ingrediente.precio);
             }
           }
@@ -153,7 +183,7 @@ export default function PlatoEspecifico({ route, navigation }) {
     });
 
     setPrecioTotal(total);
-  }, [selectedIngredients, proteinaSeleccionada, precioBase, esTipoEspecial]);
+  }, [selectedIngredients, proteinaSeleccionada, baseChorrillanaSeleccionada, precioBase, esTipoEspecial, esChorrillana]);
 
   const renderIngredientes = () => {
     if (loading) {
@@ -188,6 +218,10 @@ export default function PlatoEspecifico({ route, navigation }) {
           // Mostrar precio específico para tipo especial si existe
           if (esTipoEspecial && !ingrediente.es_principal && proteinaSeleccionada && ingrediente.precios) {
             precioMostrar = ingrediente.precios[proteinaSeleccionada] || ingrediente.precio;
+          }
+          // Mostrar precio específico para chorrillana si existe
+          else if (esChorrillana && !ingrediente.es_base_chorrillana && baseChorrillanaSeleccionada && ingrediente.precios) {
+            precioMostrar = ingrediente.precios[baseChorrillanaSeleccionada] || ingrediente.precio;
           }
 
           return (

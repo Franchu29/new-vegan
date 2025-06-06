@@ -21,7 +21,7 @@ const ResumenPedido = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const [datos, setDatos] = useState(route.params?.datos || {});
-  console.log('Platos: ResumenPedido', datos);
+  const total = datos.platos?.reduce((sum, item) => sum + item.precio, 0) || 0;
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
@@ -124,7 +124,7 @@ const ResumenPedido = () => {
         </View>
 
         <ScrollView contentContainerStyle={styles.scrollContainer}>
-          /* Mostrar solo una vez los datos del cliente y mesa */}
+          {/* Mostrar solo una vez los datos del cliente y mesa */}
 
                 {datos.platos?.map((item, index) => (
                 <View key={index} style={styles.card}>
@@ -193,7 +193,13 @@ const ResumenPedido = () => {
           </TouchableOpacity>
         </ScrollView>
 
+
         <View style={styles.footer}>
+          <View style={styles.totalContainer}>
+            <Text style={styles.totalLabel}>Total:</Text>
+            <Text style={styles.totalAmount}>${total.toFixed(0)}</Text>
+          </View>
+
           <View style={styles.footerButtons}>
             <TouchableOpacity
               style={styles.cancelButton}
@@ -211,8 +217,6 @@ const ResumenPedido = () => {
                 {isSubmitting ? 'Procesando...' : 'Generar Comanda'}
               </Text>
             </TouchableOpacity>
-
-
           </View>
         </View>
       </View>
@@ -400,7 +404,25 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: 'center',
     justifyContent: 'center',
-  }
+  },
+totalContainer: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: 10,
+  paddingHorizontal: 10,
+},
+totalLabel: {
+  fontSize: 18,
+  fontWeight: 'bold',
+  color: 'white',
+},
+totalAmount: {
+  fontSize: 18,
+  fontWeight: 'bold',
+  color: '#FFD700',
+},
+
 });
 
 export default ResumenPedido;

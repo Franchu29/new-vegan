@@ -115,11 +115,36 @@ export default function Mesas({ navigation }) {
                 <ActivityIndicator size="small" color="#0000ff" />
               ) : comandas && comandas.id ? (
                 <View style={{ marginTop: 10, width: '100%' }}>
-                  <Text style={{ fontWeight: 'bold', marginBottom: 5 }}>Nombre del cliente:</Text>
+                  <Text style={{ fontWeight: 'bold' }}>Cliente:</Text>
                   <Text>{comandas.nombre_cliente}</Text>
 
-                  <Text style={{ fontWeight: 'bold', marginTop: 10, marginBottom: 5 }}>Fecha:</Text>
+                  <Text style={{ fontWeight: 'bold', marginTop: 10 }}>Fecha:</Text>
                   <Text>{new Date(comandas.fecha).toLocaleString()}</Text>
+
+                  <Text style={{ fontWeight: 'bold', marginTop: 10 }}>Platos:</Text>
+                  {comandas.platos.map((plato, index) => (
+                    <View key={index} style={{ marginBottom: 10 }}>
+                      <Text style={{ fontWeight: '600' }}>{plato.nombre} - ${plato.precio}</Text>
+                      {plato.foto && (
+                        <ImageBackground
+                          source={{ uri: `${API_BASE_URL}${plato.foto}` }}
+                          style={{ width: 100, height: 80, marginVertical: 5 }}
+                          imageStyle={{ borderRadius: 5 }}
+                        />
+                      )}
+                      {plato.ingredientes.length > 0 && (
+                        <View style={{ marginLeft: 10 }}>
+                          <Text style={{ fontWeight: 'bold' }}>Ingredientes:</Text>
+                          {plato.ingredientes.map((ing, i) => (
+                            <Text key={i}>- {ing.nombre}</Text>
+                          ))}
+                        </View>
+                      )}
+                    </View>
+                  ))}
+
+                  <Text style={{ fontWeight: 'bold', marginTop: 10 }}>Total a pagar:</Text>
+                  <Text>${comandas.precio_final}</Text>
                 </View>
               ) : (
                 <Text style={{ marginTop: 10 }}>No hay comandas.</Text>

@@ -48,6 +48,38 @@ export default function Mesas({ navigation }) {
     }
   }, [mesaSeleccionada, modalVisible]);
 
+  const finalizarComanda = async () => {
+    if (!comandas.id) return;
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/comanda/${comandas.id}/finalizar`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        alert('Comanda finalizada correctamente');
+        setModalVisible(false);
+        setMesaSeleccionada(null);
+        navigation.navigate('Home');
+      } else {
+        alert('Error al finalizar la comanda');
+      }
+    } catch (error) {
+      console.error('Error en PUT:', error);
+      alert('Error de red al finalizar la comanda');
+    }
+  };
+
+  const datos = {
+    nombre_cliente: comandas.nombre_cliente,
+    id_mesa: mesaSeleccionada?.id,
+    platos: []
+  };
+
+
   const renderMesa = ({ item }) => {
     const isDisponible = item.estado === "L";
 
@@ -114,9 +146,10 @@ export default function Mesas({ navigation }) {
               {loadingComandas ? (
                 <ActivityIndicator size="small" color="#0000ff" />
               ) : comandas && comandas.id ? (
-                <View style={{ marginTop: 10, width: '100%' }}>
+                <View style={styles.modalSection}>
                   <Text style={{ fontWeight: 'bold' }}>Cliente:</Text>
-                  <Text>{comandas.nombre_cliente}</Text>
+                  <Text style={styles.modalSubText}>{comandas.nombre_cliente}</Text>
+
 
                   <Text style={{ fontWeight: 'bold', marginTop: 10 }}>Fecha:</Text>
                   <Text>{new Date(comandas.fecha).toLocaleString()}</Text>
@@ -155,6 +188,7 @@ export default function Mesas({ navigation }) {
                   style={[styles.modalButton, { backgroundColor: 'green' }]}
                   onPress={() => {
                     setModalVisible(false);
+                    navigation.navigate('Platos', { datos });
                   }}
                 >
                   <Text style={styles.modalButtonText}>Agregar Plato</Text>
@@ -162,9 +196,7 @@ export default function Mesas({ navigation }) {
 
                 <TouchableOpacity
                   style={[styles.modalButton, { backgroundColor: 'red' }]}
-                  onPress={() => {
-                    setModalVisible(false);
-                  }}
+                  onPress={finalizarComanda}
                 >
                   <Text style={styles.modalButtonText}>Finalizar</Text>
                 </TouchableOpacity>
@@ -251,6 +283,16 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: '80%',
     alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalSection: {
+    width: '100%',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  modalSubText: {
+    textAlign: 'center',
+    fontSize: 16,
   },
   modalText: {
     fontSize: 18,

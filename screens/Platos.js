@@ -16,7 +16,6 @@ const fondo = require('../assets/fondo.webp');
 export default function Platos({ navigation, route }) {
   const { datos } = route.params || {};
 
-
   const [eventos, setEventos] = useState([]);
   const [paginaActual, setPaginaActual] = useState(0);
   const elementosPorPagina = 6;

@@ -22,6 +22,7 @@ const ResumenPedido = () => {
   const navigation = useNavigation();
   const [datos, setDatos] = useState(route.params?.datos || {});
   const total = datos.platos?.reduce((sum, item) => sum + item.precio, 0) || 0;
+  console.log('Datos recibidos:', datos);
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
@@ -162,14 +163,12 @@ const ResumenPedido = () => {
                   )}
                   <View style={styles.buttonContainer}>
                     {/* Botón editar */}
-                  <TouchableOpacity
-                    style={styles.editButton}
-                    onPress={() => {
-                      Alert.alert('Editar', `Editar el plato: ${item.nombreEvento}`);
-                    }}
-                  >
-                    <Icon name="pencil" size={24} color="#fff" />
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.editButton}
+                      onPress={() => navigation.navigate('EditarPlato', { plato: item, mesa: datos.id_mesa, cliente: datos.nombre_cliente })}
+                    >
+                      <Icon name="pencil" size={24} color="#fff" />
+                    </TouchableOpacity>
 
                   {/* Botón eliminar */}
                   <TouchableOpacity

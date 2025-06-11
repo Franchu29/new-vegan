@@ -8,6 +8,7 @@ import {
   FlatList,
   ActivityIndicator,
   Modal,
+  ScrollView
 } from 'react-native';
 const fondo = require('../assets/fondo.webp');
 import MesaList from './MesaList';
@@ -134,73 +135,90 @@ export default function Mesas({ navigation }) {
         >
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
-              <TouchableOpacity
-                style={styles.closeButton}
-                onPress={() => setModalVisible(false)}
-              >
-                <Text style={styles.closeButtonText}>✕</Text>
-              </TouchableOpacity>
+              <ScrollView contentContainerStyle={styles.modalScrollContent}>
 
-              <Text style={styles.modalText}>Mesa {mesaSeleccionada?.id} está ocupada</Text>
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={() => setModalVisible(false)}
+                >
+                  <Text style={styles.closeButtonText}>✕</Text>
+                </TouchableOpacity>
 
-              {loadingComandas ? (
-                <ActivityIndicator size="small" color="#0000ff" />
-              ) : comandas && comandas.id ? (
-                <View style={styles.modalSection}>
-                  <Text style={{ fontWeight: 'bold' }}>Cliente:</Text>
-                  <Text style={styles.modalSubText}>{comandas.nombre_cliente}</Text>
+                <Text style={styles.modalText}>Mesa {mesaSeleccionada?.id} está ocupada</Text>
+
+                {loadingComandas ? (
+                  <ActivityIndicator size="small" color="#0000ff" />
+                ) : comandas && comandas.id ? (
+                  <View style={styles.modalSection}>
+                    <Text style={{ fontWeight: 'bold' }}>Cliente:</Text>
+                    <Text style={styles.modalSubText}>{comandas.nombre_cliente}</Text>
 
 
-                  <Text style={{ fontWeight: 'bold', marginTop: 10 }}>Fecha:</Text>
-                  <Text>{new Date(comandas.fecha).toLocaleString()}</Text>
+                    <Text style={{ fontWeight: 'bold', marginTop: 10 }}>Fecha:</Text>
+                    <Text>{new Date(comandas.fecha).toLocaleString()}</Text>
 
-                  <Text style={{ fontWeight: 'bold', marginTop: 10 }}>Platos:</Text>
-                  {comandas.platos.map((plato, index) => (
-                    <View key={index} style={{ marginBottom: 10 }}>
-                      <Text style={{ fontWeight: '600' }}>{plato.nombre} - ${plato.precio}</Text>
-                      {plato.foto && (
-                        <ImageBackground
-                          source={{ uri: `${API_BASE_URL}${plato.foto}` }}
-                          style={{ width: 100, height: 80, marginVertical: 5 }}
-                          imageStyle={{ borderRadius: 5 }}
-                        />
-                      )}
-                      {plato.ingredientes.length > 0 && (
-                        <View style={{ marginLeft: 10 }}>
-                          <Text style={{ fontWeight: 'bold' }}>Ingredientes:</Text>
-                          {plato.ingredientes.map((ing, i) => (
-                            <Text key={i}>- {ing.nombre}</Text>
-                          ))}
-                        </View>
-                      )}
-                    </View>
-                  ))}
+                    <Text style={{ fontWeight: 'bold', marginTop: 10 }}>Tipo de Consumo:</Text>
+                    <Text>{comandas.tipo_consumo === 'L' ? 'Para Llevar' : 'Para Servir'}</Text>
 
-                  <Text style={{ fontWeight: 'bold', marginTop: 10 }}>Total a pagar:</Text>
-                  <Text>${comandas.precio_final}</Text>
+                    <Text style={{ fontWeight: 'bold', marginTop: 10 }}>Platos:</Text>
+                    {comandas.platos.map((plato, index) => (
+                      <View key={index} style={{ marginBottom: 10 }}>
+                        <Text style={{ fontWeight: '600' }}>{plato.nombre} - ${plato.precio}</Text>
+
+                        {plato.foto && (
+                          <ImageBackground
+                            source={{ uri: `${API_BASE_URL}${plato.foto}` }}
+                            style={{ width: 100, height: 80, marginVertical: 5 }}
+                            imageStyle={{ borderRadius: 5 }}
+                          />
+                        )}
+                        {plato.ingredientes.length > 0 && (
+                          <View style={{ marginLeft: 10 }}>
+                            <Text style={{ fontWeight: 'bold' }}>Ingredientes:</Text>
+                            {plato.ingredientes.map((ing, i) => (
+                              <Text key={i}>- {ing.nombre}</Text>
+                            ))}
+                          </View>
+                        )}
+
+                        {plato.comentario && plato.comentario.trim().length > 0 && (
+                          <>
+                            <Text style={{ fontWeight: 'bold', marginTop: 5, textAlign: 'center' }}>
+                              Comentario:
+                            </Text>
+                            <Text style={{ textAlign: 'center' }}>{plato.comentario}</Text>
+                          </>
+                        )}
+                        <View style={{ height: 2, backgroundColor: '#ccc', marginVertical: 10 }} />
+                      </View>
+                    ))}
+
+                    <Text style={{ fontWeight: 'bold', marginTop: 10 }}>Total a pagar:</Text>
+                    <Text>${comandas.precio_final}</Text>
+                  </View>
+                ) : (
+                  <Text style={{ marginTop: 10 }}>No hay comandas.</Text>
+                )}
+
+                <View style={styles.modalButtons}>
+                  <TouchableOpacity
+                    style={[styles.modalButton, { backgroundColor: 'green' }]}
+                    onPress={() => {
+                      setModalVisible(false);
+                      navigation.navigate('Platos', { datos });
+                    }}
+                  >
+                    <Text style={styles.modalButtonText}>Agregar Plato</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={[styles.modalButton, { backgroundColor: 'red' }]}
+                    onPress={finalizarComanda}
+                  >
+                    <Text style={styles.modalButtonText}>Finalizar</Text>
+                  </TouchableOpacity>
                 </View>
-              ) : (
-                <Text style={{ marginTop: 10 }}>No hay comandas.</Text>
-              )}
-
-              <View style={styles.modalButtons}>
-                <TouchableOpacity
-                  style={[styles.modalButton, { backgroundColor: 'green' }]}
-                  onPress={() => {
-                    setModalVisible(false);
-                    navigation.navigate('Platos', { datos });
-                  }}
-                >
-                  <Text style={styles.modalButtonText}>Agregar Plato</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={[styles.modalButton, { backgroundColor: 'red' }]}
-                  onPress={finalizarComanda}
-                >
-                  <Text style={styles.modalButtonText}>Finalizar</Text>
-                </TouchableOpacity>
-              </View>
+              </ScrollView>
             </View>
           </View>
         </Modal>
@@ -328,4 +346,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
   },
+  modalScrollContent: {
+    paddingBottom: 30,
+    alignItems: 'flex-start',
+    width: '100%',
+  },
+
 });

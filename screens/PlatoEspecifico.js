@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, SafeAreaView, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, SafeAreaView, ActivityIndicator, Alert, TextInput  } from 'react-native';
 import { API_BASE_URL } from '../config';
 
 export default function PlatoEspecifico({ route, navigation }) {
@@ -15,6 +15,7 @@ export default function PlatoEspecifico({ route, navigation }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [esTipoEspecial, setEsTipoEspecial] = useState(false);
   const [esChorrillana, setEsChorrillana] = useState(false);
+  const [comentario, setComentario] = useState('');
 
   useEffect(() => {
     const fetchIngredientes = async () => {
@@ -277,7 +278,8 @@ export default function PlatoEspecifico({ route, navigation }) {
       foto,
       precio: precioTotal,
       descripcion,
-      ingredientesSeleccionados: ingredientesSeleccionadosParaEnviar
+      ingredientesSeleccionados: ingredientesSeleccionadosParaEnviar,
+      comentario
     };
 
     const datosAnteriores = datos || {
@@ -322,6 +324,19 @@ export default function PlatoEspecifico({ route, navigation }) {
             <Text style={styles.ingredientesTitulo}>Personaliza tu plato</Text>
             {renderIngredientes()}
           </View>
+
+          <View style={styles.comentarioContainer}>
+            <Text style={styles.ingredientesTitulo}>Comentarios adicionales</Text>
+            <TextInput
+              style={styles.textInputComentario}
+              multiline
+              numberOfLines={4}
+              placeholder="Escribe tus observaciones aquí..."
+              value={comentario}
+              onChangeText={setComentario}
+            />
+          </View>
+
         </ScrollView>
 
         <View style={styles.footer}>
@@ -514,5 +529,18 @@ const styles = StyleSheet.create({
   },
   loader: {
     marginTop: 50,
-  }
+  },
+  comentarioContainer: {
+    marginTop: 20,
+    paddingHorizontal: 15,
+  },
+  textInputComentario: {
+    height: 100,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 10,
+    textAlignVertical: 'top',
+    backgroundColor: '#fff',
+  },
 });

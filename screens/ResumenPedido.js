@@ -23,7 +23,7 @@ const ResumenPedido = () => {
   const [datos, setDatos] = useState(route.params?.datos || {});
   const total = datos.platos?.reduce((sum, item) => sum + item.precio, 0) || 0;
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [tipoConsumo, setTipoConsumo] = useState('S'); // 'S' por defecto
+  const [tipoConsumo, setTipoConsumo] = useState('S');
 
 const generarComanda = async () => {
   if (!datos || !datos.platos || datos.platos.length === 0) return;
@@ -62,7 +62,7 @@ const generarComanda = async () => {
             nombre_cliente,
             estado: 'E',
             precio_final: total,
-            tipo_consumo: tipoConsumo, // <-- Agregado aquí
+            tipo_consumo: tipoConsumo,
           }),
         });
 
@@ -82,6 +82,7 @@ const generarComanda = async () => {
             body: JSON.stringify({
               id_plato: item.idEvento,
               precio: item.precio,
+              comentario: item.comentario || '',
             }),
           });
 
@@ -141,6 +142,7 @@ const generarComanda = async () => {
             body: JSON.stringify({
               id_plato: item.idEvento,
               precio: item.precio,
+              comentario: item.comentario || '',
             }),
           });
 
@@ -265,6 +267,13 @@ const generarComanda = async () => {
                     No hay ingredientes seleccionados.
                     </Text>
                   )}
+                  {item.comentario && item.comentario.trim().length > 0 && (
+                    <>
+                      <Text style={styles.label}>Comentario:</Text>
+                      <Text style={styles.value}>{item.comentario}</Text>
+                    </>
+                  )}
+
                   <View style={styles.buttonContainer}>
                     {/* Botón editar */}
                     <TouchableOpacity
@@ -274,13 +283,13 @@ const generarComanda = async () => {
                       <Icon name="pencil" size={24} color="#fff" />
                     </TouchableOpacity>
 
-                  {/* Botón eliminar */}
-                  <TouchableOpacity
-                    style={styles.deleteButton}
-                    onPress={() => eliminarPlato(index)}
-                  >
-                    <Icon name="trash-can" size={24} color="#fff" />
-                  </TouchableOpacity>
+                    {/* Botón eliminar */}
+                    <TouchableOpacity
+                      style={styles.deleteButton}
+                      onPress={() => eliminarPlato(index)}
+                    >
+                      <Icon name="trash-can" size={24} color="#fff" />
+                    </TouchableOpacity>
                 </View>
               </View>
             </View>

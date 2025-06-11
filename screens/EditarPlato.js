@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, ActivityIndicator, SafeAreaView } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, ActivityIndicator, SafeAreaView, TextInput } from 'react-native';
 import { API_BASE_URL } from '../config';
 
 export default function EditarPlato({ route,navigation }) {
@@ -15,6 +15,7 @@ export default function EditarPlato({ route,navigation }) {
   const [esTipoEspecial, setEsTipoEspecial] = useState(false);
   const [esChorrillana, setEsChorrillana] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [comentario, setComentario] = useState('');
 
   const idEvento = plato?.idEvento ?? null;
 
@@ -281,7 +282,8 @@ export default function EditarPlato({ route,navigation }) {
         foto,
         precio: precioTotal,
         descripcion,
-        ingredientesSeleccionados: ingredientesSeleccionadosParaEnviar
+        ingredientesSeleccionados: ingredientesSeleccionadosParaEnviar,
+        comentario
       };
     
       const datosAnteriores = datos || {
@@ -337,6 +339,19 @@ export default function EditarPlato({ route,navigation }) {
               <Text style={styles.ingredientesTitulo}>Personaliza tu plato</Text>
               {renderIngredientes()}
             </View>
+
+            <View style={styles.comentarioContainer}>
+              <Text style={styles.ingredientesTitulo}>Comentarios adicionales</Text>
+                <TextInput
+                  style={styles.textInputComentario}
+                  multiline
+                  numberOfLines={4}
+                  placeholder="Escribe tus observaciones aquí..."
+                  value={comentario}
+                  onChangeText={setComentario}
+                />
+            </View>
+
           </ScrollView>
   
           <View style={styles.footer}>
@@ -529,5 +544,18 @@ const styles = StyleSheet.create({
   },
   loader: {
     marginTop: 50,
-  }
+  },
+    comentarioContainer: {
+    marginTop: 20,
+    paddingHorizontal: 15,
+  },
+  textInputComentario: {
+    height: 100,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 10,
+    textAlignVertical: 'top',
+    backgroundColor: '#fff',
+  },
 });

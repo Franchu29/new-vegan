@@ -1,12 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, ImageBackground, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, ImageBackground, TouchableOpacity, Image} from 'react-native';
 
 const fondo = require('../assets/fondo.webp');
+const logo = require('../assets/Logo_Blanco.webp');
 
 export default function HomeScreen({ navigation }) {
   return (
     <ImageBackground source={fondo} style={styles.background}>
       <View style={styles.overlay}>
+        <Image source={logo} style={styles.logo} />
 
         <TouchableOpacity 
             style={styles.boton}
@@ -35,12 +37,13 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  overlay: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-  },
+overlay: {
+  flex: 1,
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: 20,
+  marginTop: -80,
+},
   texto: {
     color: '#fff',
     fontSize: 28,
@@ -64,4 +67,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
+logo: {
+  width: 250,
+  height: 250,
+  resizeMode: 'contain',
+  marginBottom: 120,
+}
 });

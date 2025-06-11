@@ -23,6 +23,7 @@ const ResumenPedido = () => {
   const [datos, setDatos] = useState(route.params?.datos || {});
   const total = datos.platos?.reduce((sum, item) => sum + item.precio, 0) || 0;
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [tipoConsumo, setTipoConsumo] = useState('S'); // 'S' por defecto
 
 const generarComanda = async () => {
   if (!datos || !datos.platos || datos.platos.length === 0) return;
@@ -60,6 +61,8 @@ const generarComanda = async () => {
             id_mesa,
             nombre_cliente,
             estado: 'E',
+            precio_final: total,
+            tipo_consumo: tipoConsumo, // <-- Agregado aquí
           }),
         });
 
@@ -198,8 +201,31 @@ const generarComanda = async () => {
     <ImageBackground source={fondo} style={styles.safeArea} resizeMode="cover">
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.headerText}>Pedido de: <Text style={styles.boldText}>{datos.nombre_cliente}</Text> para la mesa <Text style={styles.boldText}>{datos.id_mesa}</Text>
-            </Text>
+          <Text style={styles.headerText}>
+            Pedido de: <Text style={styles.boldText}>{datos.nombre_cliente}</Text> para la mesa <Text style={styles.boldText}>{datos.id_mesa}</Text>
+          </Text>
+        </View>
+
+        {/* Mueve este bloque aquí, antes del ScrollView */}
+        <View style={{ flexDirection: 'row', justifyContent: 'center', marginVertical: 10 }}>
+          <TouchableOpacity
+            style={[
+              styles.tipoConsumoButton,
+              tipoConsumo === 'S' && styles.tipoConsumoButtonSelected,
+            ]}
+            onPress={() => setTipoConsumo('S')}
+          >
+            <Text style={styles.tipoConsumoText}>Para servir</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.tipoConsumoButton,
+              tipoConsumo === 'L' && styles.tipoConsumoButtonSelected,
+            ]}
+            onPress={() => setTipoConsumo('L')}
+          >
+            <Text style={styles.tipoConsumoText}>Para llevar</Text>
+          </TouchableOpacity>
         </View>
 
         <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -269,7 +295,6 @@ const generarComanda = async () => {
             <Text style={styles.botonMasTexto}>+</Text>
           </TouchableOpacity>
         </ScrollView>
-
 
         <View style={styles.footer}>
           <View style={styles.totalContainer}>
@@ -498,6 +523,21 @@ totalAmount: {
   fontSize: 18,
   fontWeight: 'bold',
   color: '#FFD700',
+},
+tipoConsumoButton: {
+  backgroundColor: '#444',
+  paddingVertical: 10,
+  paddingHorizontal: 25,
+  borderRadius: 8,
+  marginHorizontal: 8,
+},
+tipoConsumoButtonSelected: {
+  backgroundColor: '#28a745',
+},
+tipoConsumoText: {
+  color: 'white',
+  fontWeight: 'bold',
+  fontSize: 16,
 },
 
 });

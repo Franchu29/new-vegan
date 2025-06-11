@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -22,93 +22,171 @@ const ResumenPedido = () => {
   const navigation = useNavigation();
   const [datos, setDatos] = useState(route.params?.datos || {});
   const total = datos.platos?.reduce((sum, item) => sum + item.precio, 0) || 0;
-  console.log('Datos recibidos:', datos);
-
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-  const generarComanda = async () => {
-    if (!datos || !datos.platos || datos.platos.length === 0) return;
+const generarComanda = async () => {
+  if (!datos || !datos.platos || datos.platos.length === 0) return;
 
-    setIsSubmitting(true);
+  setIsSubmitting(true);
 
+  try {
+    let comandaId = null;
+    const { id_mesa, nombre_cliente, platos } = datos;
+
+    if (!id_mesa || !nombre_cliente || !platos || platos.length === 0) {
+      Alert.alert('Error', 'Faltan datos para generar la comanda');
+      return;
+    }
+
+    // ✅ 0. Verificar estado de la mesa antes de crear la comanda
     try {
-      let comandaId = null;
-
-      const { id_mesa, nombre_cliente, platos } = datos;
-
-      // 1. Crear comanda
-      const comandaResponse = await fetch(`${API_BASE_URL}/api/crear_comanda`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          id_mesa,
-          nombre_cliente,
-          estado: 'E',
-        }),
-      });
-
-      if (!comandaResponse.ok) {
-        const errorData = await comandaResponse.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Error al crear comanda');
+      console.log('Obteniendo estado de la mesa:', id_mesa);
+      const response = await fetch(`${API_BASE_URL}/api/mesa/${id_mesa}`);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'No se pudo obtener el estado de la mesa');
       }
 
-      const comandaData = await comandaResponse.json();
-      comandaId = comandaData.id_comanda;
+      const estado_mesa = await response.json();
+      console.log('Estado de la mesa:', estado_mesa);
 
-      // 2. Agregar cada plato
-      for (const item of platos) {
-        const platoResponse = await fetch(`${API_BASE_URL}/api/comanda/${comandaId}/agregar_plato`, {
+      if (estado_mesa.estado === 'L') {
+        // 1. Crear comanda
+
+        const comandaResponse = await fetch(`${API_BASE_URL}/api/crear_comanda`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            id_plato: item.idEvento,
-            precio: item.precio,
+            id_mesa,
+            nombre_cliente,
+            estado: 'E',
           }),
         });
 
-        if (!platoResponse.ok) {
-          const errorData = await platoResponse.json().catch(() => ({}));
-          throw new Error(errorData.error || 'Error al agregar plato');
+        if (!comandaResponse.ok) {
+          const errorData = await comandaResponse.json().catch(() => ({}));
+          throw new Error(errorData.error || 'Error al crear comanda');
         }
 
-        const platoData = await platoResponse.json();
-        const idPlatoxComanda = platoData.idplatoxcomanda;
+        const comandaData = await comandaResponse.json();
+        comandaId = comandaData.id_comanda;
 
-        // 3. Agregar ingredientes (si hay)
-        const ingredientes = (item.ingredientesSeleccionados || []).map(ing => ({
-          id_ingrediente: ing.id,
-          precio: ing.precio || null,
-        }));
+        // 2. Agregar cada plato
+        for (const item of platos) {
+          const platoResponse = await fetch(`${API_BASE_URL}/api/comanda/${comandaId}/agregar_plato`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id_plato: item.idEvento,
+              precio: item.precio,
+            }),
+          });
 
-        if (ingredientes.length > 0) {
-          const ingredientesResponse = await fetch(
-            `${API_BASE_URL}/api/comanda/plato/${idPlatoxComanda}/agregar_ingredientes`,
-            {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ ingredientes }),
+          if (!platoResponse.ok) {
+            const errorData = await platoResponse.json().catch(() => ({}));
+            throw new Error(errorData.error || 'Error al agregar plato');
+          }
+
+          const platoData = await platoResponse.json();
+          const idPlatoxComanda = platoData.idplatoxcomanda;
+
+          // 3. Agregar ingredientes (si hay)
+          const ingredientes = (item.ingredientesSeleccionados || []).map(ing => ({
+            id_ingrediente: ing.id,
+            precio: ing.precio || null,
+          }));
+
+          if (ingredientes.length > 0) {
+            const ingredientesResponse = await fetch(
+              `${API_BASE_URL}/api/comanda/plato/${idPlatoxComanda}/agregar_ingredientes`,
+              {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ingredientes }),
+              }
+            );
+
+            if (!ingredientesResponse.ok) {
+              const errorData = await ingredientesResponse.json().catch(() => ({}));
+              throw new Error(errorData.error || 'Error al agregar ingredientes');
             }
-          );
-
-          if (!ingredientesResponse.ok) {
-            const errorData = await ingredientesResponse.json().catch(() => ({}));
-            throw new Error(errorData.error || 'Error al agregar ingredientes');
           }
         }
+
+        navigation.navigate('Home');
+
+      } else if (estado_mesa.estado === 'O') {
+        // ❌ Si la mesa está ocupada, obtener comanda actual y mostrar ID
+
+        const comandaExistenteResponse = await fetch(`${API_BASE_URL}/api/comanda/${id_mesa}`);
+        if (!comandaExistenteResponse.ok) {
+          const errorData = await comandaExistenteResponse.json().catch(() => ({}));
+          throw new Error(errorData.error || 'No se pudo obtener la comanda actual');
+        }
+
+        const comandaExistente = await comandaExistenteResponse.json();
+        console.log('Comanda existente:', comandaExistente);
+        console.log('ID de la comanda actual:', comandaExistente.id);
+
+        const comandaId = comandaExistente.id;
+
+        // 1. Agregar cada plato
+        for (const item of platos) {
+          const platoResponse = await fetch(`${API_BASE_URL}/api/comanda/${comandaId}/agregar_plato`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id_plato: item.idEvento,
+              precio: item.precio,
+            }),
+          });
+
+          if (!platoResponse.ok) {
+            const errorData = await platoResponse.json().catch(() => ({}));
+            throw new Error(errorData.error || 'Error al agregar plato');
+          }
+
+          const platoData = await platoResponse.json();
+          const idPlatoxComanda = platoData.idplatoxcomanda;
+
+          // 2. Agregar ingredientes (si hay)
+          const ingredientes = (item.ingredientesSeleccionados || []).map(ing => ({
+            id_ingrediente: ing.id,
+            precio: ing.precio || null,
+          }));
+
+          if (ingredientes.length > 0) {
+            const ingredientesResponse = await fetch(
+              `${API_BASE_URL}/api/comanda/plato/${idPlatoxComanda}/agregar_ingredientes`,
+              {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ingredientes }),
+              }
+            );
+
+            if (!ingredientesResponse.ok) {
+              const errorData = await ingredientesResponse.json().catch(() => ({}));
+              throw new Error(errorData.error || 'Error al agregar ingredientes');
+            }
+          }
+        }
+        navigation.navigate('Home');
       }
 
-      // Redirige a HomeScreen después
-      navigation.navigate('Home');
-
-    } catch (error) {
-      console.error('Error completo:', error);
-      Alert.alert('Error', error.message);
-    } finally {
-      setIsSubmitting(false);
+    } catch (estadoError) {
+      console.error('Error al verificar estado de mesa o procesar comanda:', estadoError.message);
+      Alert.alert('Error', estadoError.message);
+      return;
     }
-  };
+
+  } catch (error) {
+    console.error('Error completo:', error);
+    Alert.alert('Error', error.message);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   const eliminarPlato = (index) => {
     const nuevosPlatos = [...(datos.platos || [])];

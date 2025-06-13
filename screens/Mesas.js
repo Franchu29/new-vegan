@@ -49,6 +49,51 @@ export default function Mesas({ navigation }) {
     }
   }, [mesaSeleccionada, modalVisible]);
 
+  const eliminarPlato = async (id_platoxcomanda, ingredientes) => {
+    try {
+      console.log("Ingredientes a eliminar:", ingredientes);
+      // 1. Eliminar cada ingrediente relacionado
+      for (const ing of ingredientes) {
+        const responseIng = await fetch(`${API_BASE_URL}/api/comanda/plato/eliminar_ingrediente`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ id_platoxcomandaxingrediente: ing.id_platoxcomandaxingrediente }),
+        });
+
+        if (!responseIng.ok) {
+          console.error('Error al eliminar ingrediente', await responseIng.json());
+          return; // Detiene si hay un error
+        }
+      }
+
+      // 2. Ahora eliminar el plato
+      const responsePlato = await fetch(`${API_BASE_URL}/api/comanda/eliminar_plato`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ idplatoxcomanda: id_platoxcomanda }),
+      });
+
+      if (responsePlato.ok) {
+        // Actualiza la lista local
+        const updatedComandas = {
+          ...comandas,
+          platos: comandas.platos.filter((p) => p.id_platoxcomanda !== id_platoxcomanda),
+        };
+        setComandas(updatedComandas);
+      } else {
+        const err = await responsePlato.json();
+        console.error('Error al eliminar el plato:', err);
+      }
+
+    } catch (error) {
+      console.error('Error general en eliminarPlato:', error);
+    }
+  };
+
   const finalizarComanda = async () => {
     if (!comandas.id) return;
 
@@ -164,6 +209,25 @@ export default function Mesas({ navigation }) {
                     {comandas.platos.map((plato, index) => (
                       <View key={index} style={{ marginBottom: 10 }}>
                         <Text style={{ fontWeight: '600' }}>{plato.nombre} - ${plato.precio}</Text>
+                            <Text style={{ fontSize: 12, color: 'gray' }}>
+                              id_platoxcomanda: {plato.id_platoxcomanda}
+                            </Text>
+
+                        <TouchableOpacity
+                          onPress={() => eliminarPlato(plato.id_platoxcomanda, plato.ingredientes)}
+                          style={{
+                            backgroundColor: '#ff4d4d',
+                            padding: 6,
+                            borderRadius: 5,
+                            marginTop: 5,
+                            alignSelf: 'flex-start',
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                          }}
+                        >
+                          <Text style={{ color: 'white', marginRight: 5 }}>Eliminar</Text>
+                          <Text style={{ color: 'white', fontSize: 16 }}>🗑️</Text>
+                        </TouchableOpacity>
 
                         {plato.foto && (
                           <ImageBackground

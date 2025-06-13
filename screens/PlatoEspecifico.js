@@ -351,7 +351,7 @@ export default function PlatoEspecifico({ route, navigation }) {
 
             <TouchableOpacity
               style={[styles.botonAccion, { 
-                backgroundColor: 'green',
+                backgroundColor: '#00A99D',
                 opacity: isSubmitting ? 0.6 : 1 
               }]}
               onPress={handleAdvance}
@@ -386,7 +386,7 @@ const styles = StyleSheet.create({
     paddingBottom: 150,
   },
   nombrePlatoBox: {
-    backgroundColor: 'green',
+    backgroundColor: '#00A99D',
     padding: 15,
     borderRadius: 10,
     marginBottom: 20,
@@ -440,7 +440,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   pedidoBox: {
-    backgroundColor: 'green',
+    backgroundColor: '#00A99D',
     padding: 12,
     borderRadius: 8,
     alignItems: 'center',

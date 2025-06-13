@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
   },
   header: {
-    backgroundColor: 'green',
+    backgroundColor: '#00A99D',
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   input: {
-    backgroundColor: 'green',
+    backgroundColor: '#00A99D',
     color: 'black',
     fontSize: 18,
     paddingVertical: 12,
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   acceptButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#00A99D',
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 20,

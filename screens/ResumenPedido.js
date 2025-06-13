@@ -406,7 +406,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   header: {
-    backgroundColor: 'green',
+    backgroundColor: '#00A99D',
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
@@ -417,7 +417,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   botonMas: {
-    backgroundColor: '#28a745',
+    backgroundColor: '#00A99D',
     borderRadius: 50,
     width: 50,
     height: 50,
@@ -432,7 +432,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   pedidoResumenContainer: {
-    backgroundColor: 'green',
+    backgroundColor: '#00A99D',
     padding: 12,
     borderRadius: 10,
     marginTop: 30,
@@ -452,7 +452,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     width: '100%',
-    backgroundColor: 'green',
+    backgroundColor: '#222',
+    borderColor: 'white',
+    borderTopWidth: 1,
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderTopLeftRadius: 20,
@@ -470,7 +472,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   confirmButton: {
-    backgroundColor: '#28a745',
+    backgroundColor: '#00A99D',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
@@ -493,12 +495,12 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: 'row',
-    gap: 10, // si tu versión lo soporta
+    gap: 10,
     marginTop: 10,
   },
 
   editButton: {
-    backgroundColor: 'green',
+    backgroundColor: '#00A99D',
     padding: 10,
     borderRadius: 50,
     width: 40,
@@ -541,7 +543,7 @@ tipoConsumoButton: {
   marginHorizontal: 8,
 },
 tipoConsumoButtonSelected: {
-  backgroundColor: '#28a745',
+  backgroundColor: '#00A99D',
 },
 tipoConsumoText: {
   color: 'white',

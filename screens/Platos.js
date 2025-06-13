@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   header: {
-    backgroundColor: 'green',
+    backgroundColor: '#00A99D',
     padding: 15,
     borderRadius: 10,
     marginTop: 40,
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   footerTextContainer: {
-    backgroundColor: 'green',
+    backgroundColor: '#00A99D',
     padding: 10,
     borderRadius: 8,
   },
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
   pageButton: {
     padding: 10,
     marginHorizontal: 20,
-    backgroundColor: 'green',
+    backgroundColor: '#00A99D',
     borderRadius: 8,
   },
   disabledButton: {

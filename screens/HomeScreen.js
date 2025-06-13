@@ -67,10 +67,10 @@ overlay: {
     fontWeight: 'bold',
     textAlign: 'center',
   },
-logo: {
-  width: 250,
-  height: 250,
-  resizeMode: 'contain',
-  marginBottom: 120,
-}
+  logo: {
+    width: 250,
+    height: 250,
+    resizeMode: 'contain',
+    marginBottom: 120,
+  }
 });

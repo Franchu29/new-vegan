@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   box: {
-    backgroundColor: 'green',
+    backgroundColor: '#00A99D',
     paddingVertical: 15,
     paddingHorizontal: 25,
     borderRadius: 10,
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   advanceButton: {
-    backgroundColor: 'green',
+    backgroundColor: '#00A99D',
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderRadius: 20,
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   advanceButtonText: {
-    color: 'white',
+    color: 'black',
     fontSize: 18,
     fontWeight: 'bold',
   },

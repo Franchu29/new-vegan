@@ -202,7 +202,7 @@ export default function Mesas({ navigation }) {
 
                 <View style={styles.modalButtons}>
                   <TouchableOpacity
-                    style={[styles.modalButton, { backgroundColor: 'green' }]}
+                    style={[styles.modalButton, { backgroundColor: '#00A99D' }]}
                     onPress={() => {
                       setModalVisible(false);
                       navigation.navigate('Platos', { datos });
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   box: {
-    backgroundColor: 'green',
+    backgroundColor: '#00A99D',
     paddingVertical: 15,
     paddingHorizontal: 25,
     borderRadius: 10,

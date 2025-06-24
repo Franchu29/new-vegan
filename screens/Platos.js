@@ -12,6 +12,7 @@ import {
 import { getEventos } from './PlatosApi';
 import { API_BASE_URL } from '../config';
 const fondo = require('../assets/fondo.webp');
+import uuid from 'react-native-uuid'; 
 
 export default function Platos({ navigation, route }) {
   const { datos } = route.params || {};
@@ -62,7 +63,10 @@ return (
               <TouchableOpacity
                 key={evento.id}
                 style={styles.itemContainer}
-                onPress={() =>
+                onPress={() => {
+                  const nuevoIdUnico = uuid.v4();
+                  console.log('Nuevo ID único generado:', nuevoIdUnico);
+
                   navigation.navigate('PlatoEspecifico', {
                     datos,
                     idEvento: evento.id,
@@ -70,9 +74,10 @@ return (
                     descripcion: evento.descripcion,
                     precio: evento.precio,
                     foto: evento.foto,
-                    idComanda: evento.id_comanda
-                  })
-                }
+                    idComanda: evento.id_comanda,
+                    idUnico: nuevoIdUnico
+                  });
+                }}
               >
                 <Image
                   source={{ uri: `${API_BASE_URL}${evento.foto}` }}

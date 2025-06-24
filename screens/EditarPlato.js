@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, ActivityIndicator, SafeAreaView, TextInput } from 'react-native';
 import { API_BASE_URL } from '../config';
+import uuid from 'react-native-uuid';
 
 export default function EditarPlato({ route,navigation }) {
   const { plato, mesa, cliente, datos, precio: precioBase } = route.params;
   const { nombreEvento, foto, descripcion, id_mesa, nombre_cliente } = plato || {};
+  const idUnico = route.params?.plato?.idUnico;
   const [ingredientesData, setIngredientesData] = useState([]);
   const [selectedIngredients, setSelectedIngredients] = useState({});
   const [proteinaSeleccionada, setProteinaSeleccionada] = useState(null);
@@ -19,7 +21,14 @@ export default function EditarPlato({ route,navigation }) {
 
   const idEvento = plato?.idEvento ?? null;
 
-  
+  useEffect(() => {
+    console.log('Plato recibido para editar:', plato);
+    console.log('Lista de platos completa (datos.platos):', datos?.platos);
+    console.log('👉 idUnico del plato:', plato?.idUnico);
+    console.log('👉 datos recibidos:', datos);
+    console.log('👉 platos en datos:', datos?.platos);
+  }, []);
+
   useEffect(() => {
       const fetchIngredientes = async () => {
         try {
@@ -275,6 +284,7 @@ export default function EditarPlato({ route,navigation }) {
       }
     
       const nuevaSeleccion = {
+        idUnico,
         idEvento,
         nombreEvento,
         nombre_cliente,
@@ -293,19 +303,19 @@ export default function EditarPlato({ route,navigation }) {
       };
     
       const platosActualizados = (datosAnteriores.platos || []).map(platoExistente => {
-        if (platoExistente.idEvento === idEvento) {
-          // Reemplaza por la nueva selección
-          return nuevaSeleccion;
+        if (platoExistente.idUnico === idUnico) {
+          return nuevaSeleccion; // reemplaza si coincide
         }
         return platoExistente;
       });
 
-      // Si no existía, agregarlo
-      const yaExiste = datosAnteriores.platos?.some(p => p.idEvento === idEvento);
+      const yaExiste = datosAnteriores.platos?.some(p => p.idUnico === idUnico);
 
       const datosActualizados = {
         ...datosAnteriores,
-        platos: yaExiste ? platosActualizados : [...(datosAnteriores.platos || []), nuevaSeleccion]
+        platos: yaExiste
+          ? platosActualizados
+          : [...(datosAnteriores.platos || []), nuevaSeleccion]
       };
     
       navigation.navigate('ResumenPedido', { datos: datosActualizados });

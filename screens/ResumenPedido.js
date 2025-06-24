@@ -13,6 +13,7 @@ import {
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { API_BASE_URL } from '../config';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import uuid from 'react-native-uuid';
 
 const fondo = require('../assets/fondo.webp');
 
@@ -24,6 +25,7 @@ const ResumenPedido = () => {
   const total = datos.platos?.reduce((sum, item) => sum + item.precio, 0) || 0;
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [tipoConsumo, setTipoConsumo] = useState('S');
+  const idUnico = route.params?.idUnico || uuid.v4();
 
 const generarComanda = async () => {
   if (!datos || !datos.platos || datos.platos.length === 0) return;
@@ -278,7 +280,8 @@ const generarComanda = async () => {
                     {/* Botón editar */}
                     <TouchableOpacity
                       style={styles.editButton}
-                      onPress={() => navigation.navigate('EditarPlato', { plato: item, mesa: datos.id_mesa, cliente: datos.nombre_cliente })}
+                      onPress={() => 
+                        navigation.navigate('EditarPlato', { plato: item, mesa: datos.id_mesa, cliente: datos.nombre_cliente, datos:datos })}
                     >
                       <Icon name="pencil" size={24} color="#fff" />
                     </TouchableOpacity>

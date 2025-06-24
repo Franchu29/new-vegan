@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, SafeAreaView, ActivityIndicator, Alert, TextInput  } from 'react-native';
 import { API_BASE_URL } from '../config';
+import uuid from 'react-native-uuid';
 
 export default function PlatoEspecifico({ route, navigation }) {
   const { datos, idEvento, nombreEvento, descripcion, precio: precioBase, foto } = route.params || {};
   const { nombre_cliente, id_mesa } = datos || {};
+  const idUnico = route.params?.idUnico || uuid.v4();
   const [ingredientesData, setIngredientesData] = useState([]);
   const [selectedIngredients, setSelectedIngredients] = useState({});
   const [proteinaSeleccionada, setProteinaSeleccionada] = useState(null);
@@ -270,7 +272,10 @@ export default function PlatoEspecifico({ route, navigation }) {
       }
     }
 
+    console.log('Ingredientes seleccionados:', idUnico);
+
     const nuevaSeleccion = {
+      idUnico,
       idEvento,
       nombreEvento,
       nombre_cliente,

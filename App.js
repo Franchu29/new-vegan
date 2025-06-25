@@ -16,48 +16,50 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen 
-          name="Home" 
-          component={HomeScreen} 
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen 
-          name="Mesa" 
-          component={Mesas} 
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen 
-          name="IngresoNombreCliente" 
-          component={IngresoNombreCliente} 
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen 
-          name="Platos" 
-          component={Platos} 
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen 
-          name="MesaComanda" 
-          component={MesaComanda} 
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen 
-          name="PlatoEspecifico" 
-          component={PlatoEspecifico} 
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen 
-          name="ResumenPedido" 
-          component={ResumenPedido} 
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen 
-          name="EditarPlato" 
-          component={EditarPlato} 
-          options={{ headerShown: false }}
-        />
-      </Stack.Navigator>
+      <View style={{ flex: 1, backgroundColor: '#222' }}>
+        <Stack.Navigator initialRouteName="Home">
+          <Stack.Screen 
+            name="Home" 
+            component={HomeScreen} 
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen 
+            name="Mesa" 
+            component={Mesas} 
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen 
+            name="IngresoNombreCliente" 
+            component={IngresoNombreCliente} 
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen 
+            name="Platos" 
+            component={Platos} 
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen 
+            name="MesaComanda" 
+            component={MesaComanda} 
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen 
+            name="PlatoEspecifico" 
+            component={PlatoEspecifico} 
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen 
+            name="ResumenPedido" 
+            component={ResumenPedido} 
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen 
+            name="EditarPlato" 
+            component={EditarPlato} 
+            options={{ headerShown: false }}
+          />
+        </Stack.Navigator>
+      </View>
     </NavigationContainer>
   );
 }

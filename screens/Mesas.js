@@ -209,25 +209,11 @@ export default function Mesas({ navigation }) {
                     {comandas.platos.map((plato, index) => (
                       <View key={index} style={{ marginBottom: 10 }}>
                         <Text style={{ fontWeight: '600' }}>{plato.nombre} - ${plato.precio}</Text>
+                            { /* 
                             <Text style={{ fontSize: 12, color: 'gray' }}>
                               id_platoxcomanda: {plato.id_platoxcomanda}
                             </Text>
-
-                        <TouchableOpacity
-                          onPress={() => eliminarPlato(plato.id_platoxcomanda, plato.ingredientes)}
-                          style={{
-                            backgroundColor: '#ff4d4d',
-                            padding: 6,
-                            borderRadius: 5,
-                            marginTop: 5,
-                            alignSelf: 'flex-start',
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                          }}
-                        >
-                          <Text style={{ color: 'white', marginRight: 5 }}>Eliminar</Text>
-                          <Text style={{ color: 'white', fontSize: 16 }}>🗑️</Text>
-                        </TouchableOpacity>
+                            */ }
 
                         {plato.foto && (
                           <ImageBackground
@@ -237,7 +223,7 @@ export default function Mesas({ navigation }) {
                           />
                         )}
                         {plato.ingredientes.length > 0 && (
-                          <View style={{ marginLeft: 10 }}>
+                          <View style={{ marginLeft: 0 }}>
                             <Text style={{ fontWeight: 'bold' }}>Ingredientes:</Text>
                             {plato.ingredientes.map((ing, i) => (
                               <Text key={i}>- {ing.nombre}</Text>
@@ -247,12 +233,27 @@ export default function Mesas({ navigation }) {
 
                         {plato.comentario && plato.comentario.trim().length > 0 && (
                           <>
-                            <Text style={{ fontWeight: 'bold', marginTop: 5, textAlign: 'center' }}>
+                            <Text style={{ fontWeight: 'bold', marginTop: 5,}}>
                               Comentario:
                             </Text>
-                            <Text style={{ textAlign: 'center' }}>{plato.comentario}</Text>
+                            <Text style={{}}>{plato.comentario}</Text>
                           </>
                         )}
+                        
+                        <TouchableOpacity
+                          onPress={() => eliminarPlato(plato.id_platoxcomanda, plato.ingredientes)}
+                          style={{
+                            backgroundColor: '#ff4d4d',
+                            padding: 6,
+                            borderRadius: 5,
+                            marginTop: 5,
+                            alignSelf: 'flex-start',
+                            flexDirection: 'row',
+                          }}
+                        >
+                          <Text style={{ color: 'white', marginRight: 5 }}>Eliminar</Text>
+                          <Text style={{ color: 'white', fontSize: 16 }}>🗑️</Text>
+                        </TouchableOpacity>
                         <View style={{ height: 2, backgroundColor: '#ccc', marginVertical: 10 }} />
                       </View>
                     ))}
@@ -282,6 +283,27 @@ export default function Mesas({ navigation }) {
                     <Text style={styles.modalButtonText}>Finalizar</Text>
                   </TouchableOpacity>
                 </View>
+
+                {/* Botón Imprimir Comanda */}
+                {comandas && comandas.id && (
+                  <TouchableOpacity
+                    style={[styles.modalButton, { backgroundColor: '#007AFF', marginTop: 10, width: '100%' }]}
+                    onPress={async () => {
+                      try {
+                        const response = await fetch(`${API_BASE_URL}/api/imprimir_comanda/${comandas.id}`);
+                        if (response.ok) {
+                          alert('Comanda enviada a impresión');
+                        } else {
+                          alert('No se pudo imprimir la comanda');
+                        }
+                      } catch (error) {
+                        alert('Error de red al imprimir la comanda');
+                      }
+                    }}
+                  >
+                    <Text style={styles.modalButtonText}>Imprimir comanda</Text>
+                  </TouchableOpacity>
+                )}
               </ScrollView>
             </View>
           </View>
@@ -363,17 +385,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 20,
     borderRadius: 10,
-    width: '80%',
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: '90%',
+    justifyContent: 'center'
   },
   modalSection: {
     width: '100%',
-    alignItems: 'center',
     marginTop: 10,
   },
   modalSubText: {
-    textAlign: 'center',
     fontSize: 16,
   },
   modalText: {

@@ -236,12 +236,18 @@ export default function PlatoEspecifico({ route, navigation }) {
               ]}
               onPress={() => handleSelectIngredient(grupo.id_tipoingrediente, ingrediente)}
             >
-              <Text style={styles.ingredienteNombre}>{ingrediente.nombre}</Text>
-              {precioMostrar !== null && (
-                <Text style={styles.ingredientePrecio}>
-                  {precioMostrar !== undefined ? `+$${precioMostrar}` : ''}
-                </Text>
-              )}
+              <View style={{ flexDirection: 'row', width: '100%', alignItems: 'center' }}>
+                <View style={{ flex: 7 }}>
+                  <Text style={styles.ingredienteNombre}>{ingrediente.nombre}</Text>
+                </View>
+                <View style={{ flex: 3, alignItems: 'flex-end' }}>
+                  {precioMostrar !== null && (
+                    <Text style={styles.ingredientePrecio}>
+                      {precioMostrar !== undefined ? `+$${precioMostrar}` : ''}
+                    </Text>
+                  )}
+                </View>
+              </View>
             </TouchableOpacity>
           );
         })}
@@ -536,8 +542,8 @@ const styles = StyleSheet.create({
     marginTop: 50,
   },
   comentarioContainer: {
-    marginTop: 20,
-    paddingHorizontal: 15,
+    marginBottom: 20,
+    width: '100%',
   },
   textInputComentario: {
     height: 100,

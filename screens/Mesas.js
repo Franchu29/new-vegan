@@ -125,6 +125,11 @@ export default function Mesas({ navigation }) {
     platos: []
   };
 
+  // Calcula el descuento de burritos antes del return
+  const burritoCount = comandas.platos?.filter(
+    (plato) => plato.nombre?.toLowerCase().includes('burrito')
+  ).length || 0;
+  const descuentoBurritos = Math.floor(burritoCount / 2) * 800;
 
   const renderMesa = ({ item }) => {
     const isDisponible = item.estado === "L";
@@ -258,8 +263,21 @@ export default function Mesas({ navigation }) {
                       </View>
                     ))}
 
-                    <Text style={{ fontWeight: 'bold', marginTop: 10 }}>Total a pagar:</Text>
-                    <Text>${comandas.precio_final}</Text>
+                    {/* Nuevo código para el descuento de burritos */}
+                    {/*
+                    Calcula el descuento de burritos
+                    */}
+                    
+                    {descuentoBurritos > 0 && (
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 }}>
+                        <Text style={{ fontWeight: 'bold', color: '#000000' }}>Descuento Burritos:</Text>
+                        <Text style={{ color: '#000000' }}>- ${descuentoBurritos}</Text>
+                      </View>
+                    )}
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 }}>
+                        <Text style={{ fontWeight: 'bold', color: '#000000' }}>Total a pagar:</Text>
+                        <Text style={{ color: '#000000' }}>${comandas.precio_final}</Text>
+                      </View>
                   </View>
                 ) : (
                   <Text style={{ marginTop: 10 }}>No hay comandas.</Text>

@@ -22,7 +22,19 @@ const ResumenPedido = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const [datos, setDatos] = useState(route.params?.datos || {});
-  const total = datos.platos?.reduce((sum, item) => sum + item.precio, 0) || 0;
+
+  // 1. Contar burritos
+  const burritoCount = datos.platos?.filter(
+    (item) => item.nombreEvento?.toLowerCase().includes('burrito')
+  ).length || 0;
+
+  // 2. Calcular descuento
+  const descuentoBurritos = Math.floor(burritoCount / 2) * 800;
+
+  // 3. Calcular total con descuento
+  const totalSinDescuento = datos.platos?.reduce((sum, item) => sum + item.precio, 0) || 0;
+  const total = totalSinDescuento - descuentoBurritos;
+
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [tipoConsumo, setTipoConsumo] = useState('S');
   const idUnico = route.params?.idUnico || uuid.v4();
@@ -309,11 +321,16 @@ const generarComanda = async () => {
         </ScrollView>
 
         <View style={styles.footer}>
+          {descuentoBurritos > 0 && (
+            <View style={styles.totalContainer}>
+              <Text style={[styles.totalLabel, { color: '#FFD700' }]}>Descuento Burritos:</Text>
+              <Text style={[styles.totalAmount, { color: '#FFD700' }]}>- ${descuentoBurritos}</Text>
+            </View>
+          )}
           <View style={styles.totalContainer}>
             <Text style={styles.totalLabel}>Total:</Text>
             <Text style={styles.totalAmount}>${total.toFixed(0)}</Text>
           </View>
-
           <View style={styles.footerButtons}>
             <TouchableOpacity
               style={styles.cancelButton}

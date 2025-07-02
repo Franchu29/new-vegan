@@ -9,8 +9,8 @@ import {
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
-import { getEventos } from './PlatosApi';
-import { API_BASE_URL } from '../config';
+import { getEventos } from './PlatosApi.js';
+import { API_BASE_URL } from '../config.js';
 const fondo = require('../assets/fondo.webp');
 import uuid from 'react-native-uuid'; 
 
@@ -25,21 +25,7 @@ export default function Platos({ navigation, route }) {
   useEffect(() => {
     const fetchEventos = async () => {
       const data = await getEventos();
-
-      // Filtra los eventos que NO son Jugos, Café o Infusiones
-      const normales = data.filter(evento =>
-        !['Jugos', 'Café', 'Infusiones'].includes(evento.nombre)
-      );
-
-      // Filtra los que SÍ son Jugos, Café o Infusiones
-      const especiales = data.filter(evento =>
-        ['Jugos', 'Café', 'Infusiones'].includes(evento.nombre)
-      );
-
-      // Une los normales primero y al final los especiales
-      const ordenPersonalizado = normales.concat(especiales);
-
-      setEventos(ordenPersonalizado);
+      setEventos(data);
       setLoading(false);
     };
 
@@ -79,6 +65,7 @@ return (
                 style={styles.itemContainer}
                 onPress={() => {
                   const nuevoIdUnico = uuid.v4();
+                  console.log('Nuevo ID único generado:', nuevoIdUnico);
 
                   navigation.navigate('PlatoEspecifico', {
                     datos,

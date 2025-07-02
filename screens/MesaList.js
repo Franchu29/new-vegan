@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL } from '../config.js';
 
 const MesaList = ({ children }) => {
   const [mesas, setMesas] = useState([]);

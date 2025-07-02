@@ -11,7 +11,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL } from '../config.js';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import uuid from 'react-native-uuid';
 
@@ -22,7 +22,19 @@ const ResumenPedido = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const [datos, setDatos] = useState(route.params?.datos || {});
-  const total = datos.platos?.reduce((sum, item) => sum + item.precio, 0) || 0;
+
+  // 1. Contar burritos
+  const burritoCount = datos.platos?.filter(
+    (item) => item.nombreEvento?.toLowerCase().includes('burrito')
+  ).length || 0;
+
+  // 2. Calcular descuento
+  const descuentoBurritos = Math.floor(burritoCount / 2) * 800;
+
+  // 3. Calcular total con descuento
+  const totalSinDescuento = datos.platos?.reduce((sum, item) => sum + item.precio, 0) || 0;
+  const total = totalSinDescuento - descuentoBurritos;
+
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [tipoConsumo, setTipoConsumo] = useState('S');
   const idUnico = route.params?.idUnico || uuid.v4();
@@ -43,6 +55,7 @@ const generarComanda = async () => {
 
     // ✅ 0. Verificar estado de la mesa antes de crear la comanda
     try {
+      console.log('Obteniendo estado de la mesa:', id_mesa);
       const response = await fetch(`${API_BASE_URL}/api/mesa/${id_mesa}`);
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -50,6 +63,7 @@ const generarComanda = async () => {
       }
 
       const estado_mesa = await response.json();
+      console.log('Estado de la mesa:', estado_mesa);
 
       if (estado_mesa.estado === 'L') {
         // 1. Crear comanda
@@ -129,6 +143,8 @@ const generarComanda = async () => {
         }
 
         const comandaExistente = await comandaExistenteResponse.json();
+        console.log('Comanda existente:', comandaExistente);
+        console.log('ID de la comanda actual:', comandaExistente.id);
 
         const comandaId = comandaExistente.id;
 
@@ -305,11 +321,16 @@ const generarComanda = async () => {
         </ScrollView>
 
         <View style={styles.footer}>
+          {descuentoBurritos > 0 && (
+            <View style={styles.totalContainer}>
+              <Text style={[styles.totalLabel, { color: '#FFD700' }]}>Descuento Burritos:</Text>
+              <Text style={[styles.totalAmount, { color: '#FFD700' }]}>- ${descuentoBurritos}</Text>
+            </View>
+          )}
           <View style={styles.totalContainer}>
             <Text style={styles.totalLabel}>Total:</Text>
             <Text style={styles.totalAmount}>${total.toFixed(0)}</Text>
           </View>
-
           <View style={styles.footerButtons}>
             <TouchableOpacity
               style={styles.cancelButton}

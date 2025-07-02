@@ -31,8 +31,9 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "0e27024b-3113-43ff-8ece-5a44b4402055"
+        "projectId": "f9d03853-32e2-4e00-b495-344ea9d1bef5"
       }
-    }
+    },
+    "owner": "ruzfrank"
   }
 }

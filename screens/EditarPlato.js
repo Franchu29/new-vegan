@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, ActivityIndicator, SafeAreaView, TextInput } from 'react-native';
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL } from '../config.js';
 import uuid from 'react-native-uuid';
 
 export default function EditarPlato({ route,navigation }) {
@@ -20,6 +20,14 @@ export default function EditarPlato({ route,navigation }) {
   const [comentario, setComentario] = useState('');
 
   const idEvento = plato?.idEvento ?? null;
+
+  useEffect(() => {
+    console.log('Plato recibido para editar:', plato);
+    console.log('Lista de platos completa (datos.platos):', datos?.platos);
+    console.log('👉 idUnico del plato:', plato?.idUnico);
+    console.log('👉 datos recibidos:', datos);
+    console.log('👉 platos en datos:', datos?.platos);
+  }, []);
 
   useEffect(() => {
       const fetchIngredientes = async () => {

@@ -14,7 +14,7 @@ let API_BASE_URL;
 if (currentMode === Mode.DEV) {
     API_BASE_URL = 'http://192.168.101.17:5000';
 } else if (currentMode === Mode.DEV_FRANCHU) {
-    API_BASE_URL = 'http://192.168.0.2:5000';
+    API_BASE_URL = 'http://192.168.0.18:5000';
 } else {
     API_BASE_URL = 'http://test.newvegan.cl';
 }
@@ -23,4 +23,4 @@ const ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg', 'webp']; // jfif is not suppor
 const ALLOWED_VIDEO_EXTENSIONS = ['mp4', 'mov', 'avi'];
 const MAX_IMAGES_POST = 10;
 
-export { API_BASE_URL, MAX_IMAGES_POST, ALLOWED_EXTENSIONS, ALLOWED_VIDEO_EXTENSIONS };   
+export { API_BASE_URL, MAX_IMAGES_POST, ALLOWED_EXTENSIONS, ALLOWED_VIDEO_EXTENSIONS };

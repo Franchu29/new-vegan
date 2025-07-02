@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 
 const fondo = require('../assets/fondo.webp');
-import MesaList from './MesaList';
+import MesaList from './MesaList.js';
 
 export default function Mesas({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, SafeAreaView, ActivityIndicator, Alert, TextInput  } from 'react-native';
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL } from '../config.js';
 import uuid from 'react-native-uuid';
 
 export default function PlatoEspecifico({ route, navigation }) {
@@ -236,12 +236,18 @@ export default function PlatoEspecifico({ route, navigation }) {
               ]}
               onPress={() => handleSelectIngredient(grupo.id_tipoingrediente, ingrediente)}
             >
-              <Text style={styles.ingredienteNombre}>{ingrediente.nombre}</Text>
-              {precioMostrar !== null && (
-                <Text style={styles.ingredientePrecio}>
-                  {precioMostrar !== undefined ? `+$${precioMostrar}` : ''}
-                </Text>
-              )}
+              <View style={{ flexDirection: 'row', width: '100%', alignItems: 'center' }}>
+                <View style={{ flex: 7 }}>
+                  <Text style={styles.ingredienteNombre}>{ingrediente.nombre}</Text>
+                </View>
+                <View style={{ flex: 3, alignItems: 'flex-end' }}>
+                  {precioMostrar !== null && (
+                    <Text style={styles.ingredientePrecio}>
+                      {precioMostrar !== undefined ? `+$${precioMostrar}` : ''}
+                    </Text>
+                  )}
+                </View>
+              </View>
             </TouchableOpacity>
           );
         })}
@@ -271,6 +277,8 @@ export default function PlatoEspecifico({ route, navigation }) {
         ingredientesSeleccionadosParaEnviar.push(...selectedIngredients[grupoId]);
       }
     }
+
+    console.log('Ingredientes seleccionados:', idUnico);
 
     const nuevaSeleccion = {
       idUnico,
@@ -534,8 +542,8 @@ const styles = StyleSheet.create({
     marginTop: 50,
   },
   comentarioContainer: {
-    marginTop: 20,
-    paddingHorizontal: 15,
+    marginBottom: 20,
+    width: '100%',
   },
   textInputComentario: {
     height: 100,

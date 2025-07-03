@@ -12,7 +12,7 @@ import {
 import { getEventos } from './PlatosApi';
 import { API_BASE_URL } from '../config';
 const fondo = require('../assets/fondo.webp');
-import uuid from 'react-native-uuid'; 
+import uuid from 'react-native-uuid';
 
 export default function Platos({ navigation, route }) {
   const { datos } = route.params || {};
@@ -25,7 +25,27 @@ export default function Platos({ navigation, route }) {
   useEffect(() => {
     const fetchEventos = async () => {
       const data = await getEventos();
-      setEventos(data);
+
+      // Palabras clave a enviar al final (convertidas a minúsculas)
+      const keywordsAlFinal = ['Bebestible', 'Café', 'Infusión', 'Smoothie', 'postre'].map(k =>
+        k.toLowerCase()
+      );
+
+      // Ordenar colocando esos platos al final
+      const eventosOrdenados = [
+        ...data.filter(evento =>
+          !keywordsAlFinal.some(palabra =>
+            evento.nombre.toLowerCase().includes(palabra)
+          )
+        ),
+        ...data.filter(evento =>
+          keywordsAlFinal.some(palabra =>
+            evento.nombre.toLowerCase().includes(palabra)
+          )
+        ),
+      ];
+
+      setEventos(eventosOrdenados);
       setLoading(false);
     };
 
@@ -51,7 +71,7 @@ return (
   <ImageBackground source={fondo} style={styles.background}>
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerText}>Eventos</Text>
+        <Text style={styles.headerText}>Platos</Text>
       </View>
 
       {loading ? (

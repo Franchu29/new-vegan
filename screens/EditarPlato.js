@@ -124,12 +124,22 @@ export default function EditarPlato({ route,navigation }) {
       const index = currentSelected.findIndex(item => item.id === ingrediente.id);
 
       if (index !== -1) {
-        currentSelected.splice(index, 1);
+        // Si el ingrediente ya está seleccionado, decidir si removemos o no
+        if (grupo.obligatorio && grupo.max_seleccion === 1 && currentSelected.length === 1) {
+          // Para grupos obligatorios de selección única, no permitir deseleccionar el último elemento
+          return { ...prev, [grupoId]: [ingrediente] };
+        } else {
+          // Para grupos no obligatorios o múltiple selección, permitir deselección
+          currentSelected.splice(index, 1);
+        }
       } else {
         if (grupo.max_seleccion === 1) {
           return { ...prev, [grupoId]: [ingrediente] };
         } else if (currentSelected.length < (grupo.max_seleccion || 1)) {
           currentSelected.push(ingrediente);
+        } else {
+          // Si ya hemos alcanzado el máximo, no hacer nada
+          return prev;
         }
       }
 

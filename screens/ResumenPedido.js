@@ -106,7 +106,9 @@ const generarComanda = async () => {
           }
 
           const platoData = await platoResponse.json();
+          console.log('Respuesta del servidor al agregar plato:', platoData);
           const idPlatoxComanda = platoData.idplatoxcomanda;
+          console.log('ID PlatoxComanda extraído:', idPlatoxComanda);
 
           // 3. Agregar ingredientes (si hay)
           const ingredientes = (item.ingredientesSeleccionados || []).map(ing => ({
@@ -115,6 +117,13 @@ const generarComanda = async () => {
           }));
 
           if (ingredientes.length > 0) {
+            console.log('Intentando agregar ingredientes a PlatoxComanda ID:', idPlatoxComanda);
+            console.log('Ingredientes a agregar:', ingredientes);
+            
+            if (!idPlatoxComanda) {
+              throw new Error('No se pudo obtener el ID del plato en la comanda');
+            }
+            
             const ingredientesResponse = await fetch(
               `${API_BASE_URL}/api/comanda/plato/${idPlatoxComanda}/agregar_ingredientes`,
               {
@@ -166,7 +175,9 @@ const generarComanda = async () => {
           }
 
           const platoData = await platoResponse.json();
+          console.log('Respuesta del servidor al agregar plato (mesa ocupada):', platoData);
           const idPlatoxComanda = platoData.idplatoxcomanda;
+          console.log('ID PlatoxComanda extraído (mesa ocupada):', idPlatoxComanda);
 
           // 2. Agregar ingredientes (si hay)
           const ingredientes = (item.ingredientesSeleccionados || []).map(ing => ({
@@ -175,6 +186,13 @@ const generarComanda = async () => {
           }));
 
           if (ingredientes.length > 0) {
+            console.log('Intentando agregar ingredientes a PlatoxComanda ID (mesa ocupada):', idPlatoxComanda);
+            console.log('Ingredientes a agregar (mesa ocupada):', ingredientes);
+            
+            if (!idPlatoxComanda) {
+              throw new Error('No se pudo obtener el ID del plato en la comanda (mesa ocupada)');
+            }
+            
             const ingredientesResponse = await fetch(
               `${API_BASE_URL}/api/comanda/plato/${idPlatoxComanda}/agregar_ingredientes`,
               {
@@ -273,7 +291,9 @@ const generarComanda = async () => {
                   {item.ingredientesSeleccionados?.length > 0 ? (
                     item.ingredientesSeleccionados.map((ing, i) => (
                     <View key={i} style={styles.ingredienteItem}>
-                      <Text style={styles.ingredienteNombre}>{ing.nombre}</Text>
+                      <View style={styles.ingredienteInfo}>
+                        <Text style={styles.ingredienteNombre}>{ing.nombre}</Text>
+                      </View>
                     </View>
                     ))
                   ) : (
@@ -405,15 +425,26 @@ const styles = StyleSheet.create({
   ingredienteItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     backgroundColor: '#555',
     borderRadius: 6,
     paddingHorizontal: 10,
     paddingVertical: 6,
     marginBottom: 6,
   },
+  ingredienteInfo: {
+    flex: 1,
+  },
+  ingredienteTipo: {
+    color: '#AAA',
+    fontSize: 12,
+    fontWeight: '500',
+    marginBottom: 2,
+  },
   ingredienteNombre: {
     color: 'white',
     fontSize: 14,
+    fontWeight: '600',
   },
   ingredientePrecio: {
     color: '#FFD700',

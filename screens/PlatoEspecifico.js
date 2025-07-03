@@ -60,6 +60,14 @@ export default function PlatoEspecifico({ route, navigation }) {
                 baseChorrillanaInicial = primeraBase.id.toString();
               }
             }
+            
+            // Para grupos obligatorios que no son base de chorrillana, seleccionar el primer ingrediente
+            if (grupo.obligatorio && !grupo.ingredientes?.some(i => i.es_base_chorrillana) && !grupo.ingredientes?.some(i => i.es_principal)) {
+              const primerIngrediente = grupo.ingredientes?.[0];
+              if (primerIngrediente) {
+                initialSelection[grupo.id_tipoingrediente] = [primerIngrediente];
+              }
+            }
           }
         });
 
@@ -113,12 +121,25 @@ export default function PlatoEspecifico({ route, navigation }) {
       const index = currentSelected.findIndex(item => item.id === ingrediente.id);
 
       if (index !== -1) {
-        currentSelected.splice(index, 1);
+        // Si el ingrediente ya está seleccionado, decidir si removemos o no
+        if (grupo.obligatorio && grupo.max_seleccion === 1 && currentSelected.length === 1) {
+          // Para grupos obligatorios de selección única, no permitir deseleccionar el último elemento
+          return { ...prev, [grupoId]: [ingrediente] };
+        } else {
+          // Para grupos no obligatorios o múltiple selección, permitir deselección
+          currentSelected.splice(index, 1);
+        }
       } else {
+        // Si el ingrediente no está seleccionado, lo agregamos
         if (grupo.max_seleccion === 1) {
+          // Para grupos de selección única, reemplazar la selección actual
           return { ...prev, [grupoId]: [ingrediente] };
         } else if (currentSelected.length < (grupo.max_seleccion || 1)) {
+          // Para grupos de selección múltiple, agregar si no hemos alcanzado el máximo
           currentSelected.push(ingrediente);
+        } else {
+          // Si ya hemos alcanzado el máximo, no hacer nada
+          return prev;
         }
       }
 
@@ -205,7 +226,13 @@ export default function PlatoEspecifico({ route, navigation }) {
       return <Text style={styles.noIngredientsText}>No hay ingredientes disponibles</Text>;
     }
 
-    return ingredientesData.map((grupo, index) => (
+    // Ordenar: obligatorios primero, luego opcionales
+    const ingredientesOrdenados = [
+      ...ingredientesData.filter(grupo => grupo.obligatorio),
+      ...ingredientesData.filter(grupo => !grupo.obligatorio)
+    ];
+
+    return ingredientesOrdenados.map((grupo, index) => (
       <View key={`${grupo.id_tipoingrediente}-${index}`} style={styles.ingredienteGrupo}>
         <Text style={styles.grupoTitulo}>
           {grupo.tipo_ingrediente_nombre}

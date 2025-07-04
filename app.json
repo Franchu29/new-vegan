@@ -17,11 +17,11 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icon.png",
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.franchu2966.newvegan"
+      "package": "com.pebete.newvegan"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -31,9 +31,9 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "f9d03853-32e2-4e00-b495-344ea9d1bef5"
+        "projectId": "6d02f7e3-e410-4d5c-b85e-8c4bdf317d80"
       }
     },
-    "owner": "ruzfrank"
+    "owner": "pebete"
   }
 }

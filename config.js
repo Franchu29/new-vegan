@@ -14,7 +14,7 @@ let API_BASE_URL;
 if (currentMode === Mode.DEV) {
     API_BASE_URL = 'http://192.168.101.17:5000';
 } else if (currentMode === Mode.DEV_FRANCHU) {
-    API_BASE_URL = 'http://192.168.0.18:5000';
+    API_BASE_URL = 'http://192.168.0.15:5000';
 } else {
     API_BASE_URL = 'http://test.newvegan.cl';
 }

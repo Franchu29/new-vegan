@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,16 +7,26 @@ import {
   ImageBackground,
   FlatList,
   ActivityIndicator,
-  Modal,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import MesaList from './MesaList.js';
 
 const fondo = require('../assets/fondo.webp');
-import MesaList from './MesaList.js';
 
 export default function Mesas({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [mesaSeleccionada, setMesaSeleccionada] = useState(null);
   const [mesaLibreSeleccionada, setMesaLibreSeleccionada] = useState(null);
+  const [apiBaseUrl, setApiBaseUrl] = useState(null);
+
+  // Cargar la IP al montar el componente
+  useEffect(() => {
+    const loadIp = async () => {
+      const storedIp = await AsyncStorage.getItem('API_BASE_URL');
+      setApiBaseUrl(storedIp || 'http://192.168.0.15:5000'); // IP por defecto
+    };
+    loadIp();
+  }, []);
 
   const handleMesaPress = (item) => {
     if (item.estado === 'O') {
@@ -24,7 +34,7 @@ export default function Mesas({ navigation }) {
       setModalVisible(false);
     } else if (item.estado === 'L') {
       setMesaLibreSeleccionada(item);
-      setMesaSeleccionada(null); // Limpiar mesa ocupada si hay
+      setMesaSeleccionada(null);
     }
   };
 
@@ -50,7 +60,6 @@ export default function Mesas({ navigation }) {
           <Text style={styles.text}>Número de Mesas</Text>
         </View>
 
-        {/* Mostrar mensajes */}
         {mesaLibreSeleccionada && (
           <View style={{ padding: 10, alignItems: 'center' }}>
             <Text style={{ color: '#fff', fontSize: 18 }}>
@@ -67,54 +76,57 @@ export default function Mesas({ navigation }) {
           </View>
         )}
 
-        <MesaList>
-          {({ mesas, isLoading }) =>
-            isLoading ? (
-              <ActivityIndicator size="large" color="#0000ff" />
-            ) : (
-              <FlatList
-                key={'flatlist-4columns'}
-                data={mesas}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={renderMesa}
-                contentContainerStyle={styles.grid}
-                numColumns={4}
-                ListEmptyComponent={
-                  <Text style={{ color: '#fff', textAlign: 'center', marginTop: 20 }}>
-                    No hay mesas disponibles
-                  </Text>
-                }
-              />
-            )
-          }
-        </MesaList>
+        {apiBaseUrl ? (
+          <MesaList apiBaseUrl={apiBaseUrl}>
+            {({ mesas, isLoading }) =>
+              isLoading ? (
+                <ActivityIndicator size="large" color="#0000ff" />
+              ) : (
+                <FlatList
+                  key={'flatlist-4columns'}
+                  data={mesas}
+                  keyExtractor={(item) => item.id.toString()}
+                  renderItem={renderMesa}
+                  contentContainerStyle={styles.grid}
+                  numColumns={4}
+                  ListEmptyComponent={
+                    <Text style={{ color: '#fff', textAlign: 'center', marginTop: 20 }}>
+                      No hay mesas disponibles
+                    </Text>
+                  }
+                />
+              )
+            }
+          </MesaList>
+        ) : (
+          <ActivityIndicator size="large" color="#00ff00" />
+        )}
 
         <View style={styles.bottomButtonsContainer}>
-        <TouchableOpacity
+          <TouchableOpacity
             style={styles.cancelButton}
             onPress={() => navigation.goBack()}
-        >
+          >
             <Text style={styles.cancelButtonText}>Cancelar</Text>
-        </TouchableOpacity>
+          </TouchableOpacity>
 
-        <TouchableOpacity
+          <TouchableOpacity
             style={[
-            styles.advanceButton,
-            { opacity: mesaLibreSeleccionada ? 1 : 0.5 },
+              styles.advanceButton,
+              { opacity: mesaLibreSeleccionada ? 1 : 0.5 },
             ]}
             disabled={!mesaLibreSeleccionada}
             onPress={() => {
-            if (mesaLibreSeleccionada) {
+              if (mesaLibreSeleccionada) {
                 navigation.navigate('IngresoNombreCliente', {
-                id_mesa: mesaLibreSeleccionada.id,
+                  id_mesa: mesaLibreSeleccionada.id,
                 });
-            }
+              }
             }}
-        >
+          >
             <Text style={styles.advanceButtonText}>Avanzar</Text>
-        </TouchableOpacity>
+          </TouchableOpacity>
         </View>
-
       </View>
     </ImageBackground>
   );

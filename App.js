@@ -8,6 +8,7 @@ import Platos from './screens/Platos';
 import PlatoEspecifico from './screens/PlatoEspecifico';
 import ResumenPedido from './screens/ResumenPedido';
 import EditarPlato from './screens/EditarPlato';
+import Config from './screens/Config';
 import { StatusBar } from 'react-native';
 
 const Stack = createNativeStackNavigator();
@@ -55,6 +56,11 @@ export default function App() {
         <Stack.Screen 
           name="EditarPlato" 
           component={EditarPlato} 
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen 
+          name="Config" 
+          component={Config} 
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

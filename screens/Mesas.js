@@ -11,8 +11,8 @@ import {
   ScrollView
 } from 'react-native';
 const fondo = require('../assets/fondo.webp');
-import MesaList from './MesaList';
-import { API_BASE_URL } from '../config';
+import MesaList from './MesaList.js';
+import { API_BASE_URL } from '../config.js';
 
 export default function Mesas({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);

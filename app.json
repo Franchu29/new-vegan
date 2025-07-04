@@ -21,7 +21,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.pebete.newvegan",
+      
       "usesCleartextTraffic": true
     },
     "web": {
@@ -29,11 +29,6 @@
     },
     "plugins": [
       "expo-sqlite"
-    ],
-    "extra": {
-      "eas": {
-        "projectId": "9ecf84db-88f4-466d-8b98-31f770d7eaa3"
-      }
-    }
+    ]
   }
 }

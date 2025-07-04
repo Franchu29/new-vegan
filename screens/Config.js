@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { config, setApiBaseUrl } from '../config';
+import { NativeEventEmitter, NativeModules } from 'react-native';
 
 export default function ConfigScreen({ navigation }) {
   const [ip, setIp] = useState('');
@@ -17,8 +18,11 @@ export default function ConfigScreen({ navigation }) {
     }
 
     await setApiBaseUrl(ip);
+    // Emitir evento global para que el banner se actualice
+    const eventEmitter = new NativeEventEmitter(NativeModules.ToastExample || {});
+    eventEmitter.emit('API_BASE_URL_UPDATED');
     Alert.alert('Guardado', `Nueva IP: ${ip}`);
-    navigation.goBack(); // Regresar si estás usando React Navigation
+    navigation.goBack();
   };
 
   return (

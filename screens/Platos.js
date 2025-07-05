@@ -9,8 +9,8 @@ import {
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
-import { getEventos } from './PlatosApi';
-import { API_BASE_URL } from '../config';
+import { getEventos } from './PlatosApi.js';
+import { loadApiBaseUrl, config } from '../config.js';
 const fondo = require('../assets/fondo.webp');
 import uuid from 'react-native-uuid';
 
@@ -24,14 +24,13 @@ export default function Platos({ navigation, route }) {
 
   useEffect(() => {
     const fetchEventos = async () => {
+      await loadApiBaseUrl(); // ✅ Cargar IP dinámica
       const data = await getEventos();
 
-      // Palabras clave a enviar al final (convertidas a minúsculas)
       const keywordsAlFinal = ['Bebestible', 'Café', 'Infusión', 'Smoothie', 'postre'].map(k =>
         k.toLowerCase()
       );
 
-      // Ordenar colocando esos platos al final
       const eventosOrdenados = [
         ...data.filter(evento =>
           !keywordsAlFinal.some(palabra =>
@@ -99,10 +98,10 @@ return (
                   });
                 }}
               >
-                <Image
-                  source={{ uri: `${API_BASE_URL}${evento.foto}` }}
-                  style={styles.itemImage}
-                />
+              <Image
+                source={{ uri: `${config.API_BASE_URL}${evento.foto}` }}
+                style={styles.itemImage}
+              />
                 <Text style={{ marginTop: 5, color: 'white', textAlign: 'center' }}>
                   {evento.nombre}
                 </Text>

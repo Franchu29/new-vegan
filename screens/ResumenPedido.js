@@ -11,7 +11,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
-import { API_BASE_URL } from '../config';
+import { loadApiBaseUrl, config } from '../config.js'; 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import uuid from 'react-native-uuid';
 
@@ -45,6 +45,7 @@ const generarComanda = async () => {
   setIsSubmitting(true);
 
   try {
+    await loadApiBaseUrl();
     let comandaId = null;
     const { id_mesa, nombre_cliente, platos } = datos;
 
@@ -56,7 +57,7 @@ const generarComanda = async () => {
     // ✅ 0. Verificar estado de la mesa antes de crear la comanda
     try {
       console.log('Obteniendo estado de la mesa:', id_mesa);
-      const response = await fetch(`${API_BASE_URL}/api/mesa/${id_mesa}`);
+      const response = await fetch(`${config.API_BASE_URL}/api/mesa/${id_mesa}`);
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.error || 'No se pudo obtener el estado de la mesa');
@@ -68,7 +69,7 @@ const generarComanda = async () => {
       if (estado_mesa.estado === 'L') {
         // 1. Crear comanda
 
-        const comandaResponse = await fetch(`${API_BASE_URL}/api/crear_comanda`, {
+        const comandaResponse = await fetch(`${config.API_BASE_URL}/api/crear_comanda`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -90,7 +91,7 @@ const generarComanda = async () => {
 
         // 2. Agregar cada plato
         for (const item of platos) {
-          const platoResponse = await fetch(`${API_BASE_URL}/api/comanda/${comandaId}/agregar_plato`, {
+          const platoResponse = await fetch(`${config.API_BASE_URL}/api/comanda/${comandaId}/agregar_plato`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -125,7 +126,7 @@ const generarComanda = async () => {
             }
             
             const ingredientesResponse = await fetch(
-              `${API_BASE_URL}/api/comanda/plato/${idPlatoxComanda}/agregar_ingredientes`,
+              `${config.API_BASE_URL}/api/comanda/plato/${idPlatoxComanda}/agregar_ingredientes`,
               {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -145,7 +146,7 @@ const generarComanda = async () => {
       } else if (estado_mesa.estado === 'O') {
         // ❌ Si la mesa está ocupada, obtener comanda actual y mostrar ID
 
-        const comandaExistenteResponse = await fetch(`${API_BASE_URL}/api/comanda/${id_mesa}`);
+        const comandaExistenteResponse = await fetch(`${config.API_BASE_URL}/api/comanda/${id_mesa}`);
         if (!comandaExistenteResponse.ok) {
           const errorData = await comandaExistenteResponse.json().catch(() => ({}));
           throw new Error(errorData.error || 'No se pudo obtener la comanda actual');
@@ -159,7 +160,7 @@ const generarComanda = async () => {
 
         // 1. Agregar cada plato
         for (const item of platos) {
-          const platoResponse = await fetch(`${API_BASE_URL}/api/comanda/${comandaId}/agregar_plato`, {
+          const platoResponse = await fetch(`${config.API_BASE_URL}/api/comanda/${comandaId}/agregar_plato`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -194,7 +195,7 @@ const generarComanda = async () => {
             }
             
             const ingredientesResponse = await fetch(
-              `${API_BASE_URL}/api/comanda/plato/${idPlatoxComanda}/agregar_ingredientes`,
+              `${config.API_BASE_URL}/api/comanda/plato/${idPlatoxComanda}/agregar_ingredientes`,
               {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -268,7 +269,7 @@ const generarComanda = async () => {
                 {datos.platos?.map((item, index) => (
                 <View key={index} style={styles.card}>
                   <Image
-                  source={{ uri: `${API_BASE_URL}${item.foto}` }}
+                  source={{ uri: `${config.API_BASE_URL}${item.foto}` }}
                   style={styles.itemImage}
                   resizeMode="cover"
                   />

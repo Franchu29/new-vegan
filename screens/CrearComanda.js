@@ -1,9 +1,11 @@
-import { API_BASE_URL } from '../config';
+import { loadApiBaseUrl, config } from '../config.js';
 
 export async function crearComanda(nombre_cliente, id_mesa) {
   try {
+    // Asegurarse de tener la IP actual cargada desde AsyncStorage
+    await loadApiBaseUrl();
 
-    const response = await fetch(`${API_BASE_URL}/api/crear_comanda`, {
+    const response = await fetch(`${config.API_BASE_URL}/api/crear_comanda`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

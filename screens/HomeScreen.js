@@ -1,5 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, ImageBackground, TouchableOpacity, Image} from 'react-native';
+import { Feather } from '@expo/vector-icons';
 
 const fondo = require('../assets/fondo.webp');
 const logo = require('../assets/Logo_Blanco.webp');
@@ -7,6 +8,12 @@ const logo = require('../assets/Logo_Blanco.webp');
 export default function HomeScreen({ navigation }) {
   return (
     <ImageBackground source={fondo} style={styles.background}>
+      <View style={styles.configContainer}>
+        <TouchableOpacity onPress={() => navigation.navigate('Configuracion')}>
+          <Feather name="settings" size={28} color="white" />
+        </TouchableOpacity>
+      </View>
+
       <View style={styles.overlay}>
         <Image source={logo} style={styles.logo} />
 
@@ -37,13 +44,19 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-overlay: {
-  flex: 1,
-  alignItems: 'center',
-  justifyContent: 'center',
-  padding: 20,
-  marginTop: -80,
-},
+  configContainer: {
+    position: 'absolute',
+    top: 50,
+    right: 30,
+    zIndex: 10,
+  },
+  overlay: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+    marginTop: -80,
+  },
   texto: {
     color: '#fff',
     fontSize: 28,

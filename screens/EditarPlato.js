@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, ActivityIndicator, SafeAreaView, TextInput } from 'react-native';
-import { API_BASE_URL } from '../config';
+import { loadApiBaseUrl, config } from '../config.js';
 import uuid from 'react-native-uuid';
 
 export default function EditarPlato({ route,navigation }) {
@@ -32,7 +32,8 @@ export default function EditarPlato({ route,navigation }) {
   useEffect(() => {
       const fetchIngredientes = async () => {
         try {
-          const response = await fetch(`${API_BASE_URL}/api/reglas_ingredientes/${idEvento}`);
+          await loadApiBaseUrl();
+          const response = await fetch(`${config.API_BASE_URL}/api/reglas_ingredientes/${idEvento}`);
           if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
             throw new Error(errorData.error || 'Error al obtener los ingredientes');
@@ -341,7 +342,7 @@ export default function EditarPlato({ route,navigation }) {
   
             {foto ? (
               <Image
-                source={{ uri: `${API_BASE_URL}${foto}` }}
+                source={{ uri: `${config.API_BASE_URL}${foto}` }}
                 style={styles.imagenPlato}
                 resizeMode="cover"
               />

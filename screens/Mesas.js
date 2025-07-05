@@ -11,8 +11,8 @@ import {
   ScrollView
 } from 'react-native';
 const fondo = require('../assets/fondo.webp');
-import MesaList from './MesaList';
-import { API_BASE_URL } from '../config';
+import MesaList from './MesaList.js';
+import { loadApiBaseUrl, config } from '../config.js'; 
 
 export default function Mesas({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -33,7 +33,8 @@ export default function Mesas({ navigation }) {
       if (!mesaSeleccionada) return;
       setLoadingComandas(true);
       try {
-        const response = await fetch(`${API_BASE_URL}/api/comanda/${mesaSeleccionada.id}`);
+        await loadApiBaseUrl();
+        const response = await fetch(`${config.API_BASE_URL}/api/comanda/${mesaSeleccionada.id}`);
         const data = await response.json();
         setComandas(data);
       } catch (error) {
@@ -51,10 +52,11 @@ export default function Mesas({ navigation }) {
 
   const eliminarPlato = async (id_platoxcomanda, ingredientes) => {
     try {
+      await loadApiBaseUrl();
       console.log("Ingredientes a eliminar:", ingredientes);
       // 1. Eliminar cada ingrediente relacionado
       for (const ing of ingredientes) {
-        const responseIng = await fetch(`${API_BASE_URL}/api/comanda/plato/eliminar_ingrediente`, {
+        const responseIng = await fetch(`${config.API_BASE_URL}/api/comanda/plato/eliminar_ingrediente`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
@@ -69,7 +71,7 @@ export default function Mesas({ navigation }) {
       }
 
       // 2. Ahora eliminar el plato
-      const responsePlato = await fetch(`${API_BASE_URL}/api/comanda/eliminar_plato`, {
+      const responsePlato = await fetch(`${config.API_BASE_URL}/api/comanda/eliminar_plato`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -98,7 +100,8 @@ export default function Mesas({ navigation }) {
     if (!comandas.id) return;
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/comanda/${comandas.id}/finalizar`, {
+      await loadApiBaseUrl();
+      const response = await fetch(`${config.API_BASE_URL}/api/comanda/${comandas.id}/finalizar`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -222,7 +225,7 @@ export default function Mesas({ navigation }) {
 
                         {plato.foto && (
                           <ImageBackground
-                            source={{ uri: `${API_BASE_URL}${plato.foto}` }}
+                            source={{ uri: `${config.API_BASE_URL}${plato.foto}` }}
                             style={{ width: 100, height: 80, marginVertical: 5 }}
                             imageStyle={{ borderRadius: 5 }}
                           />
@@ -308,7 +311,7 @@ export default function Mesas({ navigation }) {
                     style={[styles.modalButton, { backgroundColor: '#007AFF', marginTop: 10, width: '100%' }]}
                     onPress={async () => {
                       try {
-                        const response = await fetch(`${API_BASE_URL}/api/imprimir_comanda/${comandas.id}`);
+                        const response = await fetch(`${config.API_BASE_URL}/api/imprimir_comanda/${comandas.id}`);
                         if (response.ok) {
                           alert('Comanda enviada a impresión');
                         } else {

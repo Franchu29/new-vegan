@@ -1,0 +1,81 @@
+/* Configuracion.css */
+
+.config-form-background {
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.config-form-container {
+  background: rgba(248, 248, 248, 0.9); /* fondo semitransparente para legibilidad */
+  max-width: 500px;
+  width: 90%;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.buttons-row {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.config-input {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.config-save-button {
+  background-color: #16a34a;
+  color: white;
+  padding: 12px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.config-save-button:hover {
+  background-color: #15803d;
+}
+
+.config-cancel-button {
+  background-color: #ef4444; /* rojo */
+  color: white;
+  padding: 12px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.config-cancel-button:hover {
+  background-color: #b91c1c;
+}
+
+.config-reset-button {
+  background-color: #f39c12;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  margin-left: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.config-reset-button:hover {
+  background-color: #e67e22;
+}

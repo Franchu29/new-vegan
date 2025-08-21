@@ -1,0 +1,262 @@
+/* Fondo principal en el contenedor padre (.safeArea) */
+.safeArea {
+  background-size: cover;         /* cubre toda el área sin deformar */
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: transparent;  /* quita fondo sólido */
+}
+
+/* Contenedor principal semitransparente para destacar contenido */
+.container {
+  background-color: rgba(34, 34, 34, 0.7); /* negro semi-transparente */
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  min-height: 100vh;
+  padding-bottom: 180px; /* espacio para footer */
+  box-sizing: border-box;
+}
+
+/* Scrollable container interno */
+.scrollContainer {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 150px;
+}
+
+/* Título plato */
+.nombrePlatoBox {
+  background-color: rgba(0, 169, 157, 0.9); /* semitransparente para mantener color */
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  margin-top: 20px;
+  width: 100%;
+  text-align: center;
+}
+
+.nombrePlatoText {
+  font-size: 22px;
+  color: white;
+  font-weight: bold;
+}
+
+/* Imagen del plato */
+.imagenPlato {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 30px;
+}
+
+/* Texto cuando no hay imagen */
+.textoNoImagen {
+  color: white;
+  font-size: 16px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+/* Footer fijo */
+.footer-PlatoEspecifico {
+  padding: 15px;
+  border-top: 1px solid #444;
+  background-color: rgba(34, 34, 34, 0.8);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+
+/* Botones en footer */
+.footerButtons {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+/* Botones acción */
+.botonAccion {
+  flex: 1;
+  padding: 15px 0;
+  border-radius: 25px;
+  margin: 0 5px;
+  cursor: pointer;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  border: none;
+  text-align: center;
+  transition: opacity 0.3s ease;
+}
+
+.botonAccion:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Caja del pedido */
+.pedidoBox {
+  background-color: rgba(0, 169, 157, 0.9);
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.textoPedido {
+  color: white;
+  font-size: 16px;
+  margin: 0;
+}
+
+/* Descripción del plato */
+.itemDescription {
+  margin-top: 4px;
+  color: white;
+  text-align: center;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+/* Precio */
+.itemPrice {
+  margin-top: 4px;
+  color: #FFD700;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+/* Contenedor de ingredientes */
+.ingredientesContainer {
+  width: 100%;
+  margin-top: 10px;
+}
+
+/* Título ingredientes */
+.ingredientesTitulo {
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+/* Grupo de ingredientes con fondo semitransparente */
+.ingredienteGrupo {
+  margin-bottom: 25px;
+  background-color: rgba(51, 51, 51, 0.75);
+  padding: 15px;
+  border-radius: 10px;
+}
+
+/* Título de grupo */
+.grupoTitulo {
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0 0 5px 0;
+}
+
+/* Subtítulo grupo */
+.grupoSubTitulo {
+  color: #ddd;
+  margin-bottom: 10px;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Botones ingredientes */
+.ingredienteItem {
+  background-color: #555;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ingredienteItem:hover {
+  background-color: #666;
+}
+
+/* Ingrediente seleccionado */
+.ingredienteSelected {
+  background-color: #0a6 !important;
+}
+
+/* Nombre ingrediente */
+.ingredienteNombre {
+  color: white;
+  font-size: 14px;
+  flex-grow: 1;
+}
+
+/* Precio ingrediente */
+.ingredientePrecio {
+  color: #FFD700;
+  font-size: 14px;
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+/* Mensajes de error */
+.errorText {
+  color: red;
+  font-size: 16px;
+  text-align: center;
+}
+
+.noIngredientsText {
+  color: white;
+  font-size: 16px;
+  text-align: center;
+}
+
+.errorSelection {
+  color: red;
+  font-size: 13px;
+  margin-top: 5px;
+}
+
+/* Loader */
+.loader {
+  margin-top: 50px;
+  text-align: center;
+  color: #00ff00;
+  font-weight: bold;
+}
+
+/* Comentario */
+.comentarioContainer {
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.textInputComentario {
+  width: 100%;
+  min-height: 120px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 12px;
+  resize: vertical;
+  font-family: inherit;
+  font-size: 16px;
+  box-sizing: border-box;
+  background-color: #fdfdfd;
+  color: #333;
+}

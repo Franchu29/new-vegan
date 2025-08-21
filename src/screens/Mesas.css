@@ -1,0 +1,195 @@
+/* Fondo principal */
+.background-mesas {
+  display: flex;
+  flex-direction: column;
+  background-size: cover;
+  width: 100%;
+  height: 100vh;
+}
+
+/* Contenedor principal */
+.container-mesas {
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1; /* <--- CAMBIO CLAVE */
+}
+
+/* Caja del título */
+.box-mesas {
+  background-color: #00A99D;
+  padding: 15px 25px;
+  border-radius: 10px;
+  align-self: center;
+}
+
+/* Texto dentro de la caja */
+.text-mesas {
+  color: black;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Grid de mesas */
+.grid-mesas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+}
+
+/* Botón de mesa */
+.mesaButton-mesas {
+  margin: 5px;
+  padding: 20px 10px;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+}
+
+.modalButton-centered {
+  display: block;
+  margin: 10px auto 0 auto; /* top: 10px, left/right auto, bottom: 0 */
+  width: fit-content;
+}
+
+/* Texto de la mesa */
+.mesaText-mesas {
+  color: #000;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+/* Botón de cancelar */
+.cancelButton-mesas {
+  background-color: red;
+  padding: 15px 40px;
+  border-radius: 20px;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  margin: 30px auto 0 auto;
+  cursor: pointer;
+  border: none;
+}
+
+/* Modal overlay */
+.modalOverlay-mesas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Modal content */
+.modalContent-mesas {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 75%;
+  max-width: 600px; /* 👈 nuevo: límite máximo */
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+/* Sección dentro del modal */
+.modalSection-mesas {
+  width: 100%;
+  margin-top: 10px;
+}
+
+/* Subtexto del modal */
+.modalSubText-mesas {
+  font-size: 16px;
+}
+
+/* Título del modal */
+.modalText-mesas {
+  font-size: 18px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+/* Botones dentro del modal */
+.modalButtons-mesas {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+/* Botón individual del modal */
+.modalButton-mesas {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  border: none;
+  cursor: pointer;
+}
+
+/* Botón de cerrar modal */
+.closeButton-mesas {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+  padding: 5px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+}
+
+/* Scroll interno del modal (si aplica) */
+.modalScrollContent-mesas {
+  max-height: 60vh; /* 👈 limita la altura interna visible */
+  overflow-y: auto;
+  padding-bottom: 30px;
+}
+
+/* Imagen del plato */
+.platoImage-mesas {
+  width: 100px;
+  height: 80px;
+  border-radius: 5px;
+  object-fit: cover;
+  margin: 5px 0;
+}
+
+/* Tarjeta de plato */
+.platoCard-mesas {
+  margin-bottom: 10px;
+}
+
+/* Botón de eliminar plato */
+.deleteButton-mesas {
+  background-color: #ff4d4d;
+  padding: 6px 10px;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  border: none;
+  margin-top: 5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}

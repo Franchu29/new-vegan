@@ -1,15 +1,21 @@
 import { useEffect, useState } from "react";
-import { API_BASE_URL } from '../config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const MesaList = ({ children }) => {
   const [mesas, setMesas] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [apiBaseUrl, setApiBaseUrl] = useState(null);
 
   useEffect(() => {
-    let isMounted = true;
-    const loadMesas = async () => {
+    const fetchData = async () => {
+      let isMounted = true;
+
       try {
-        const response = await fetch(`${API_BASE_URL}/api/mesas`);
+        const storedIp = await AsyncStorage.getItem('API_BASE_URL');
+        const ip = storedIp || 'http://192.168.0.15:5000'; // fallback por defecto
+        setApiBaseUrl(ip);
+
+        const response = await fetch(`${ip}/api/mesas`);
         const data = await response.json();
         if (isMounted) {
           setMesas(data);
@@ -21,18 +27,19 @@ const MesaList = ({ children }) => {
           setIsLoading(false);
         }
       }
+
+      return () => {
+        isMounted = false;
+      };
     };
 
-    loadMesas();
-
-    return () => {
-      isMounted = false;
-    };
+    fetchData();
   }, []);
 
   const getComandaByMesaId = async (mesaId) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/comanda/${mesaId}`);
+      const ip = apiBaseUrl || 'http://192.168.0.15:5000';
+      const response = await fetch(`${ip}/api/comanda/${mesaId}`);
       if (!response.ok) {
         throw new Error("Error al obtener comanda");
       }

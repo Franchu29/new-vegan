@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, ActivityIndicator, SafeAreaView, TextInput } from 'react-native';
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL } from '../config.js';
 import uuid from 'react-native-uuid';
 
 export default function EditarPlato({ route,navigation }) {

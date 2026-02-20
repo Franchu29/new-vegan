@@ -9,8 +9,8 @@ import {
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
-import { getEventos } from './PlatosApi';
-import { API_BASE_URL } from '../config';
+import { getEventos } from './PlatosApi.js';
+import { API_BASE_URL } from '../config.js';
 const fondo = require('../assets/fondo.webp');
 import uuid from 'react-native-uuid';
 

@@ -1,4 +1,4 @@
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL } from '../config.js';
 export async function getEventos() {
   try {
     const res = await fetch(`${API_BASE_URL}/api/tipos_platos`);

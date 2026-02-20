@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, SafeAreaView, ActivityIndicator, Alert, TextInput  } from 'react-native';
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL } from '../config.js';
 import uuid from 'react-native-uuid';
 
 export default function PlatoEspecifico({ route, navigation }) {
